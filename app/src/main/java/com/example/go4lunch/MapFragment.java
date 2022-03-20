@@ -40,6 +40,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreate: is called");
 
+
         super.onCreate(savedInstanceState);
     }
 
@@ -48,7 +49,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView: is called");
 
-        initMap();
 
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
@@ -57,7 +57,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onViewCreated: is called");
         super.onViewCreated(view, savedInstanceState);
-        
+
+        // Necessarily in onViewCreated because of initMap()'s if statement
+        //Todo : Rework on methods logic in order for center's user location to be triggered only at start and when asked (not when re-opening the map fragment)
+        initMap(); //Triggers onMapReady
     }
 
     @Override
@@ -65,9 +68,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         Toast.makeText(getActivity(), "Map is ready", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onMapReady: Map is ready");
         gMap = googleMap;
-
         getDeviceLocation();
-
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
