@@ -1,6 +1,7 @@
 package com.example.go4lunch;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -11,58 +12,71 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
-import android.app.Dialog;
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
-import com.karumi.dexter.listener.single.DialogOnDeniedPermissionListener;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+import java.util.List;
+
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, EasyPermissions.PermissionCallbacks {
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 123;
+    private static final int RC_SIGN_IN = 1606;
+    private static final int ERROR_DIALOG_REQUEST = 1989;
     private DrawerLayout drawer;
-    private BottomNavigationView bottomNavigationView;
-    private NavController navController;
-    private static final int ERROR_DIALOG_REQUEST = 9001;
     private static final String TAG = "MainActivity";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        if (isServiceOK()) {
-            init();
-        }
+        initUi();
+        getLocationPermission();
+        //startSignInActivity();
     }
 
-    // Checks if user's device has the good version
-    private boolean isServiceOK() {
-        Log.d(TAG, "isServiceOK: checking google services version");
-        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MainActivity.this);
-
-        if (available == ConnectionResult.SUCCESS) {
-            //Everything is fine and the user can make map queries
-            Log.d(TAG, "isServiceOK: Google Play Services is working");
-            return true;
-        } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
-            //an error occurred but we can resolve it
-            Log.d(TAG, "isServiceOK: a fixable error has been detected");
-            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MainActivity.this, available, ERROR_DIALOG_REQUEST);
-            dialog.show();
+    @AfterPermissionGranted(LOCATION_PERMISSION_REQUEST_CODE)
+    private void getLocationPermission() {
+        Log.d(TAG, "getLocationPermission: is called");
+        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            initFragments();
         } else {
-            Toast.makeText(this, "You cannot make map requests", Toast.LENGTH_SHORT).show();
+            EasyPermissions.requestPermissions(this, getString(R.string.rationale), LOCATION_PERMISSION_REQUEST_CODE, perms);
         }
-        return false;
     }
 
-    private void init() {
-        //init fragment
+ //   private void startSignInActivity() {
+ //       // Choose authentication providers
+ //       List<AuthUI.IdpConfig> providers = Arrays.asList(
+ //               new AuthUI.IdpConfig.GoogleBuilder().build(),
+ //               new AuthUI.IdpConfig.EmailBuilder().build());
+//
+ //       // Launch the activity
+ //       startActivityForResult(
+ //               AuthUI.getInstance()
+ //                       .createSignInIntentBuilder()
+ //                       .setTheme(R.style.LoginTheme)
+ //                       .setAvailableProviders(providers)
+ //                       .setIsSmartLockEnabled(false, true)
+ //                       .setLogo(R.drawable.go4lunch_ic_sign)
+ //                       .build(),
+ //               RC_SIGN_IN);
+ //   }
+
+    private void initFragments() {
+        Log.d(TAG, "initFragments: Initializing the fragments");
+        //initFragments fragment
         Fragment fragment = new Fragment();
 
         //Open Fragment
@@ -70,7 +84,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .beginTransaction()
                 .replace(R.id.fragment, fragment)
                 .commit();
+    }
 
+    private void initUi() {
+        Log.d(TAG, "initUi: Initializing main activity UI");
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav_view);
         NavController navController = Navigation.findNavController(this, R.id.fragment);
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
@@ -83,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //Toggle the hamburger icon to open and close the drawer menu
+        //Toggle the icon to open and close the drawer menu
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -116,5 +133,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.d(TAG, "onRequestPermissionsResult: getting permissions result");
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        initFragments();
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        if (EasyPermissions.somePermissionDenied(this, perms.get(0))) {
+            EasyPermissions.requestPermissions(this, getString(R.string.rationale), LOCATION_PERMISSION_REQUEST_CODE, perms.get(0));
+
+        }
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            new AppSettingsDialog.Builder(this).build().show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE) {
+            initFragments();
+            Toast.makeText(this, "Current Location", Toast.LENGTH_SHORT).show();
+        }
     }
 }
