@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="16dp"
+    android:id="@+id/restaurant_row_layout">
+
+    <TextView
+        android:id="@+id/restaurant_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="L'OPEN BAR"
+        android:textStyle="bold"
+        android:gravity="center_vertical"
+        android:paddingBottom="5dp"
+        android:maxLines="2"
+        android:textSize="12sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="8dp"/>
+
+    <TextView
+        android:id="@+id/restaurant_infos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.4"
+        android:text="French - 12 rue du Faubourg Poissonnière"
+        android:gravity="center_vertical"
+        android:maxLines="2"
+        android:paddingBottom="5dp"
+        android:textSize="10sp"
+        app:layout_constraintTop_toBottomOf="@id/restaurant_name"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="8dp"/>
+
+    <TextView
+        android:id="@+id/open_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.3"
+        android:text="Open until 7pm"
+        android:gravity="center_vertical"
+        android:maxLines="2"
+        android:textSize="10sp"
+        app:layout_constraintTop_toBottomOf="@+id/restaurant_infos"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="8dp"/>
+
+    <ImageView
+        android:id="@+id/restaurant_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/ic_launcher_round"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/restaurant_distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="500m"
+        app:layout_constraintEnd_toStartOf="@+id/restaurant_image"
+        android:layout_margin="8dp"/>
+
+    <TextView
+        android:id="@+id/number_coworkers_going"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="(8)"
+        app:layout_constraintTop_toBottomOf="@id/restaurant_distance"
+        app:layout_constraintEnd_toStartOf="@+id/restaurant_image"
+        android:layout_margin="8dp"/>
+
+    <TextView
+        android:id="@+id/restaurant_stars"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.3"
+        android:drawableEnd="@drawable/ic_baseline_star_24"
+        android:drawableTint="#f2c80a"
+        android:text="8"
+        android:maxLines="1"
+        app:layout_constraintTop_toBottomOf="@id/number_coworkers_going"
+        app:layout_constraintEnd_toStartOf="@id/restaurant_image"
+        android:layout_margin="8dp"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

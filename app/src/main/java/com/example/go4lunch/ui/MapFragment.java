@@ -1,10 +1,11 @@
-package com.example.go4lunch;
+package com.example.go4lunch.ui;
 
 import android.Manifest;
-import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +16,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.example.go4lunch.R;
+import com.example.go4lunch.model.Restaurant;
+import com.example.go4lunch.utils.RestaurantRepository;
+import com.example.go4lunch.viewmodel.ViewModelRestaurant;
+import com.google.android.gms.common.internal.service.Common;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -26,21 +32,22 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
     private static final String TAG = "MapFragment";
-    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
-    private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final float DEFAULT_ZOOM = 15f;
-    private final boolean locationPermissionGranted = false;
     private GoogleMap gMap;
+    private Location currentLocation;
+    private ViewModelRestaurant viewModelRestaurant;
+    FloatingActionButton centerUserBtn;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreate: is called");
-
-
+        viewModelRestaurant = new ViewModelProvider(this).get(ViewModelRestaurant.class);
         super.onCreate(savedInstanceState);
     }
 
@@ -48,7 +55,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView: is called");
-
 
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
@@ -59,8 +65,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState);
 
         // Necessarily in onViewCreated because of initMap()'s if statement
-        //Todo : Rework on methods logic in order for center's user location to be triggered only at start and when asked (not when re-opening the map fragment)
+        //Todo : Rework on methods logic in order for users location centering to be triggered only at start and when asked (not when re-opening the map fragment)
         initMap(); //Triggers onMapReady
+        centerUserBtn = view.findViewById(R.id.gps_center_on_user);
+
+        centerUserBtn.setOnClickListener(v -> {
+
+            if(currentLocation != null){
+                moveCamera(new LatLng(
+                        currentLocation.getLatitude(),
+                        currentLocation.getLongitude()),
+                        DEFAULT_ZOOM);
+                
+                getNearbyRestaurants();
+            }
+
+        });
+    }
+
+    private void getNearbyRestaurants() {
+        String latlng = currentLocation.getLatitude() + "," + currentLocation.getLongitude();
+        int radius = 200;
+        viewModelRestaurant.fetchNearByRestaurants(latlng, getString(R.string.SEARCH_TYPE), radius);
     }
 
     @Override
@@ -90,21 +116,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private void getDeviceLocation() {
+     void getDeviceLocation() {
         Log.d(TAG, "getDeviceLocation: getting the device current location");
 
         FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
 
         try {
             final Task location = fusedLocationProviderClient.getLastLocation();
-            location.addOnCompleteListener(new OnCompleteListener() {
-                @Override
-                public void onComplete(@NonNull Task task) {
-                    if (task.isSuccessful()) {
-                        Log.d(TAG, "onComplete: Found location");
-                        Location currentLocation = (Location) task.getResult();
-                        moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
-                    }
+            location.addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "onComplete: Found location");
+                     currentLocation = (Location) task.getResult();
+                    moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
                 }
             });
         } catch (SecurityException e) {
@@ -112,11 +135,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+
+
     private void moveCamera(LatLng latLng, float zoom) {
         Log.d(TAG, "moveCamera: Moving the camera to:" + latLng.latitude + ", lng:" + latLng.longitude);
 
-            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
+
 
 
 }

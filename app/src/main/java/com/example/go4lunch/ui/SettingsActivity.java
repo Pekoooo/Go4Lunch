@@ -1,8 +1,10 @@
-package com.example.go4lunch;
+package com.example.go4lunch.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.example.go4lunch.R;
 
 public class SettingsActivity extends AppCompatActivity {
 
