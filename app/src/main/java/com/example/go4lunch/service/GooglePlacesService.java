@@ -16,7 +16,7 @@ public interface GooglePlacesService {
             .build();
 
     @GET("maps/api/place/nearbysearch/json")
-    Call<PlacesNearbySearchResponse> getNearbyResponse(@Query(value = "location", encoded = true) String location,
+    Call<PlacesNearbySearchResponse> searchRestaurants(@Query(value = "location", encoded = true) String location,
                                                        @Query("type") String type,
                                                        @Query("radius") int radius,
                                                        @Query("key") String key);

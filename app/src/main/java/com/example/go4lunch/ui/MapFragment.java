@@ -16,9 +16,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.go4lunch.R;
+import com.example.go4lunch.model.GooglePlacesAPI.PlacesNearbySearchResponse;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.utils.RestaurantRepository;
 import com.example.go4lunch.viewmodel.ViewModelRestaurant;
@@ -81,12 +84,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
 
         });
+
+
     }
 
     private void getNearbyRestaurants() {
         String latlng = currentLocation.getLatitude() + "," + currentLocation.getLongitude();
         int radius = 200;
-        viewModelRestaurant.fetchNearByRestaurants(latlng, getString(R.string.SEARCH_TYPE), radius);
+         viewModelRestaurant.searchRestaurants(latlng, getString(R.string.SEARCH_TYPE), radius);
     }
 
     @Override
@@ -102,6 +107,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
         gMap.setMyLocationEnabled(true);
         gMap.getUiSettings().setMyLocationButtonEnabled(true);
+
+
     }
 
     private void initMap() {
