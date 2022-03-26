@@ -1,7 +1,6 @@
 package com.example.go4lunch.service;
 
-import com.example.go4lunch.model.GooglePlacesAPI.PlacesNearbySearchResponse;
-import com.example.go4lunch.model.Restaurant;
+import com.example.go4lunch.model.GooglePlacesModel.GoogleResponseModel;
 
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -16,8 +15,8 @@ public interface GooglePlacesService {
             .build();
 
     @GET("maps/api/place/nearbysearch/json")
-    Call<PlacesNearbySearchResponse> searchRestaurants(@Query(value = "location", encoded = true) String location,
-                                                       @Query("type") String type,
-                                                       @Query("radius") int radius,
-                                                       @Query("key") String key);
+    Call<GoogleResponseModel> searchRestaurants(@Query(value = "location", encoded = true) String location,
+                                                @Query("type") String type,
+                                                @Query("radius") int radius,
+                                                @Query("key") String key);
 }

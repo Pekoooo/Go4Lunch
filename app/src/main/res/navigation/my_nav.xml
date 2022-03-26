@@ -14,7 +14,7 @@
         android:id="@+id/listFragment"
         android:name="com.example.go4lunch.ui.ListFragment"
         android:label="fragment_list"
-        tools:layout="@layout/fragment_list" />
+        tools:layout="@layout/fragment_list_restaurant" />
     <fragment
         android:id="@+id/coworkersFragment"
         android:name="com.example.go4lunch.ui.CoworkersFragment"

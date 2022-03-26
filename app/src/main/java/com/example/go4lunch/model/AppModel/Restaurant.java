@@ -1,92 +1,70 @@
-package com.example.go4lunch.model.GooglePlacesAPI;
+package com.example.go4lunch.model.AppModel;
 
+import com.example.go4lunch.model.GooglePlacesModel.GeometryModel;
+import com.example.go4lunch.model.GooglePlacesModel.PhotoModel;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Place {
+
+public class Restaurant {
 
     @SerializedName("business_status")
     @Expose
     private String businessStatus;
+
+    @SerializedName("geometry")
+    @Expose
+    private GeometryModel geometry;
+
     @SerializedName("icon")
     @Expose
     private String icon;
-    @SerializedName("icon_background_color")
-    @Expose
-    private String iconBackgroundColor;
-    @SerializedName("icon_mask_base_uri")
-    @Expose
-    private String iconMaskBaseUri;
+
     @SerializedName("name")
     @Expose
     private String name;
-    @SerializedName("opening_hours")
+
+    @SerializedName("obfuscated_type")
     @Expose
-    private OpeningHours openingHours;
+    private List<Object> obfuscatedType = null;
+
+    @SerializedName("photos")
+    @Expose
+    private List<PhotoModel> photos = null;
 
     @SerializedName("place_id")
     @Expose
     private String placeId;
 
-    @SerializedName("price_level")
-    @Expose
-    private Integer priceLevel;
+
     @SerializedName("rating")
     @Expose
     private Double rating;
+
     @SerializedName("reference")
     @Expose
     private String reference;
+
     @SerializedName("scope")
     @Expose
     private String scope;
+
     @SerializedName("types")
     @Expose
     private List<String> types = null;
+
     @SerializedName("user_ratings_total")
     @Expose
     private Integer userRatingsTotal;
+
     @SerializedName("vicinity")
     @Expose
     private String vicinity;
-    @SerializedName("permanently_closed")
-    @Expose
-    private Boolean permanentlyClosed;
-    @SerializedName("website")
-    @Expose
-    private String website;
-    @SerializedName("formatted_address")
-    @Expose
-    private String address;
-    @SerializedName("international_phone_number")
-    @Expose
-    private String phone;
 
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(String website) {
-        this.website = website;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+    @Expose(serialize = false, deserialize = false)
+    private boolean isSaved;
 
     public String getBusinessStatus() {
         return businessStatus;
@@ -94,6 +72,14 @@ public class Place {
 
     public void setBusinessStatus(String businessStatus) {
         this.businessStatus = businessStatus;
+    }
+
+    public GeometryModel getGeometry() {
+        return geometry;
+    }
+
+    public void setGeometry(GeometryModel geometry) {
+        this.geometry = geometry;
     }
 
     public String getIcon() {
@@ -104,23 +90,6 @@ public class Place {
         this.icon = icon;
     }
 
-    public String getIconBackgroundColor() {
-        return iconBackgroundColor;
-    }
-
-    public void setIconBackgroundColor(String iconBackgroundColor) {
-        this.iconBackgroundColor = iconBackgroundColor;
-    }
-
-    public String getIconMaskBaseUri() {
-        return iconMaskBaseUri;
-    }
-
-    public void setIconMaskBaseUri(String iconMaskBaseUri) {
-        this.iconMaskBaseUri = iconMaskBaseUri;
-    }
-
-
     public String getName() {
         return name;
     }
@@ -129,12 +98,21 @@ public class Place {
         this.name = name;
     }
 
-    public OpeningHours getOpeningHours() {
-        return openingHours;
+    public List<Object> getObfuscatedType() {
+        return obfuscatedType;
     }
 
-    public void setOpeningHours(OpeningHours openingHours) {
-        this.openingHours = openingHours;
+    public void setObfuscatedType(List<Object> obfuscatedType) {
+        this.obfuscatedType = obfuscatedType;
+    }
+
+
+    public List<PhotoModel> getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(List<PhotoModel> photos) {
+        this.photos = photos;
     }
 
     public String getPlaceId() {
@@ -145,13 +123,6 @@ public class Place {
         this.placeId = placeId;
     }
 
-    public Integer getPriceLevel() {
-        return priceLevel;
-    }
-
-    public void setPriceLevel(Integer priceLevel) {
-        this.priceLevel = priceLevel;
-    }
 
     public Double getRating() {
         return rating;
@@ -201,11 +172,11 @@ public class Place {
         this.vicinity = vicinity;
     }
 
-    public Boolean getPermanentlyClosed() {
-        return permanentlyClosed;
+    public boolean isSaved() {
+        return isSaved;
     }
 
-    public void setPermanentlyClosed(Boolean permanentlyClosed) {
-        this.permanentlyClosed = permanentlyClosed;
+    public void setSaved(boolean saved) {
+        isSaved = saved;
     }
 }

@@ -7,34 +7,34 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.go4lunch.model.GooglePlacesAPI.PlacesNearbySearchResponse;
-import com.example.go4lunch.model.Restaurant;
-import com.example.go4lunch.ui.MapFragment;
+import com.example.go4lunch.model.GooglePlacesModel.GoogleResponseModel;
 import com.example.go4lunch.utils.RestaurantRepository;
-
-import java.util.List;
 
 public class ViewModelRestaurant extends AndroidViewModel {
 
-    private static final String TAG = "ViewModelRestaurant";
-    private final RestaurantRepository restaurantRepository;
-    private MutableLiveData<PlacesNearbySearchResponse> listOfRestaurants;
+    private static final String TAG = "MyViewModelRestaurant";
+    private RestaurantRepository restaurantRepository;
+    private MutableLiveData<GoogleResponseModel> listOfRestaurants;
 
     
     public ViewModelRestaurant(@NonNull Application application) {
         super(application);
         restaurantRepository = RestaurantRepository.getInstance();
+
+    }
+
+    public void init() {
+        restaurantRepository = new RestaurantRepository();
         listOfRestaurants = restaurantRepository.getListOfRestaurants();
-
     }
 
 
-    public void searchRestaurants(String latlng, String type, int radius) {
+    public void searchRestaurants(String latlng) {
         Log.d(TAG, "searchRestaurants: is Called");
-        restaurantRepository.searchRestaurants(latlng, type, radius, "AIzaSyDwt4HaFs_pyttzXrf9lEZF5IMgyDkVcN4");
+        restaurantRepository.searchRestaurants(latlng);
     }
 
-    public MutableLiveData<PlacesNearbySearchResponse> getListOfRestaurants(){
+    public MutableLiveData<GoogleResponseModel> getListOfRestaurants(){
         return listOfRestaurants;
     }
 

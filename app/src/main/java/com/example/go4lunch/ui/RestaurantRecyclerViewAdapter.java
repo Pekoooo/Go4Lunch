@@ -1,45 +1,80 @@
 package com.example.go4lunch.ui;
 
-import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.go4lunch.databinding.RestaurantListRowBinding;
-import com.example.go4lunch.model.GooglePlacesAPI.Place;
+import com.example.go4lunch.R;
+import com.example.go4lunch.model.AppModel.Restaurant;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<RestaurantViewHolder> {
+public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<RestaurantRecyclerViewAdapter.RestaurantResultHolder> {
 
-    private final List<Place> places;
-
-    public RestaurantRecyclerViewAdapter(List<Place> places){
-
-        this.places = places;
-
-    }
-
+    private List<Restaurant> restaurants = new ArrayList<>();
+    private static final String TAG = "MyRestoRecyclerView";
 
 
     @NonNull
     @Override
-    public RestaurantViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        RestaurantListRowBinding binding = RestaurantListRowBinding.inflate(layoutInflater, parent, false);
-        return new RestaurantViewHolder(binding);
+    public RestaurantRecyclerViewAdapter.RestaurantResultHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        Log.d(TAG, "onCreateViewHolder: Creating ViewHolder");
+        View itemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.restaurant_list_row, parent, false);
+
+        return new RestaurantResultHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RestaurantViewHolder holder, int position) {
-       // holder.rowBinding.restaurantName.setText(this.restaurants.get(position));
+    public void onBindViewHolder(@NonNull RestaurantRecyclerViewAdapter.RestaurantResultHolder holder, int position) {
+        Log.d(TAG, "onBindViewHolder: is Called");
+        Restaurant currentRestaurant = restaurants.get(position);
+        holder.restaurantName.setText(currentRestaurant.getName());
+
+
+
+
 
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        Log.d(TAG, "getItemCount: is Called");
+        return restaurants.size();
+    }
+
+    public void setRestaurants(List<Restaurant> restaurants){
+        Log.d(TAG, "setRestaurants: is Called");
+        this.restaurants = restaurants;
+        notifyDataSetChanged();
+    }
+
+    static class RestaurantResultHolder extends RecyclerView.ViewHolder {
+
+       private final TextView restaurantName;
+      // private final TextView restaurantInfo;
+      // private final TextView openOrClosed;
+      // private final TextView restaurantDistance;
+      // private final TextView coworkersGoing;
+      // private final TextView restaurantStars;
+
+        public RestaurantResultHolder(@NonNull View itemView) {
+            super(itemView);
+
+           restaurantName     = itemView.findViewById(R.id.restaurant_name);
+          // restaurantInfo     = itemView.findViewById(R.id.restaurant_info);
+          // openOrClosed       = itemView.findViewById(R.id.open_text);
+          // restaurantDistance = itemView.findViewById(R.id.restaurant_distance);
+          // coworkersGoing     = itemView.findViewById(R.id.number_coworkers_going);
+          // restaurantStars    = itemView.findViewById(R.id.restaurant_stars);
+
+
+        }
     }
 }

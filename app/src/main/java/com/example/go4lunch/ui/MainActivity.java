@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final int RC_SIGN_IN = 1606;
     private static final int ERROR_DIALOG_REQUEST = 1989;
     private DrawerLayout drawer;
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "MyMainActivity";
     private ActivityMainBinding binding;
 
     @Override

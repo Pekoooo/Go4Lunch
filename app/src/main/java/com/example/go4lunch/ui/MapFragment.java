@@ -1,11 +1,9 @@
 package com.example.go4lunch.ui;
 
 import android.Manifest;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,16 +14,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.go4lunch.R;
-import com.example.go4lunch.model.GooglePlacesAPI.PlacesNearbySearchResponse;
-import com.example.go4lunch.model.Restaurant;
-import com.example.go4lunch.utils.RestaurantRepository;
 import com.example.go4lunch.viewmodel.ViewModelRestaurant;
-import com.google.android.gms.common.internal.service.Common;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -39,7 +31,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
-    private static final String TAG = "MapFragment";
+    private static final String TAG = "MyMapFragment";
     private static final float DEFAULT_ZOOM = 15f;
     private GoogleMap gMap;
     private Location currentLocation;
@@ -91,7 +83,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private void getNearbyRestaurants() {
         String latlng = currentLocation.getLatitude() + "," + currentLocation.getLongitude();
         int radius = 200;
-         viewModelRestaurant.searchRestaurants(latlng, getString(R.string.SEARCH_TYPE), radius);
+         viewModelRestaurant.searchRestaurants(latlng);
     }
 
     @Override
@@ -130,11 +122,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         try {
             final Task location = fusedLocationProviderClient.getLastLocation();
-            location.addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    Log.d(TAG, "onComplete: Found location");
-                     currentLocation = (Location) task.getResult();
-                    moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
+            location.addOnCompleteListener(new OnCompleteListener() {
+                @Override
+                public void onComplete(@NonNull Task task) {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "onComplete: Found location");
+                        currentLocation = (Location) task.getResult();
+                        MapFragment.this.moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
+                    }
                 }
             });
         } catch (SecurityException e) {
