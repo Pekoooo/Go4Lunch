@@ -103,4 +103,19 @@ public class ListFragment extends Fragment {
             });
 
     }
+
+    public double distanceToLocation(Restaurant restaurant) {
+
+        double latitude = restaurant.getGeometry().getLocation().getLongitude();
+        double longitude = restaurant.getGeometry().getLocation().getLongitude();
+
+        Location startPoint = new Location("start");
+        startPoint.setLatitude(latitude);
+        startPoint.setLongitude(longitude);
+
+        return currentLocation.distanceTo(startPoint);
+
+
+
+    }
 }

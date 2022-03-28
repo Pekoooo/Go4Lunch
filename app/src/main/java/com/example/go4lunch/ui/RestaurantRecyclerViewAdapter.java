@@ -7,10 +7,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.go4lunch.R;
 import com.example.go4lunch.model.AppModel.Restaurant;
+import com.example.go4lunch.viewmodel.ViewModelRestaurant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.List;
 public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<RestaurantRecyclerViewAdapter.RestaurantResultHolder> {
 
     private List<Restaurant> restaurants = new ArrayList<>();
+
     private static final String TAG = "MyRestoRecyclerView";
 
 
@@ -28,18 +31,26 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.restaurant_list_row, parent, false);
 
+
+
+
+
         return new RestaurantResultHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RestaurantRecyclerViewAdapter.RestaurantResultHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder: is Called");
+
+
         Restaurant currentRestaurant = restaurants.get(position);
+        //double distance = ;
         holder.restaurantName.setText(currentRestaurant.getName());
-
-
-
-
+        holder.restaurantInfo.setText(currentRestaurant.getVicinity());
+        holder.restaurantStars.setText(currentRestaurant.getRating().toString());
+        //holder.openOrClosed.setText(currentRestaurant.);
+        //holder.restaurantDistance.setText((int) distance);
+        //holder.coworkersGoing.setText(currentRestaurant.getName());
 
     }
 
@@ -58,21 +69,21 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
     static class RestaurantResultHolder extends RecyclerView.ViewHolder {
 
        private final TextView restaurantName;
-      // private final TextView restaurantInfo;
-      // private final TextView openOrClosed;
-      // private final TextView restaurantDistance;
-      // private final TextView coworkersGoing;
-      // private final TextView restaurantStars;
+       private final TextView restaurantInfo;
+       private final TextView openOrClosed;
+       private final TextView restaurantDistance;
+       private final TextView coworkersGoing;
+       private final TextView restaurantStars;
 
         public RestaurantResultHolder(@NonNull View itemView) {
             super(itemView);
 
            restaurantName     = itemView.findViewById(R.id.restaurant_name);
-          // restaurantInfo     = itemView.findViewById(R.id.restaurant_info);
-          // openOrClosed       = itemView.findViewById(R.id.open_text);
-          // restaurantDistance = itemView.findViewById(R.id.restaurant_distance);
-          // coworkersGoing     = itemView.findViewById(R.id.number_coworkers_going);
-          // restaurantStars    = itemView.findViewById(R.id.restaurant_stars);
+           restaurantInfo     = itemView.findViewById(R.id.restaurant_info);
+           openOrClosed       = itemView.findViewById(R.id.open_text);
+           restaurantDistance = itemView.findViewById(R.id.restaurant_distance);
+           coworkersGoing     = itemView.findViewById(R.id.number_coworkers_going);
+           restaurantStars    = itemView.findViewById(R.id.restaurant_stars);
 
 
         }

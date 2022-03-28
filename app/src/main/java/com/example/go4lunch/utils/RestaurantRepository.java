@@ -7,6 +7,10 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.go4lunch.model.GooglePlacesModel.GoogleResponseModel;
 import com.example.go4lunch.service.GooglePlacesService;
 
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -15,7 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RestaurantRepository {
 
-    private static final int DEFAULT_RADIUS_SEARCH = 200;
+    private static final int DEFAULT_RADIUS_SEARCH = 500;
     private final String DEFAULT_TYPE_SEARCH = "restaurant";
     private static RestaurantRepository restaurantRepository;
     private final GooglePlacesService googlePlacesService;
@@ -25,9 +29,22 @@ public class RestaurantRepository {
 
     public RestaurantRepository() {
         listOfRestaurants = new MutableLiveData<>();
+
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        OkHttpClient client =
+                new OkHttpClient.Builder()
+                        .addInterceptor(
+                               loggingInterceptor
+                        )
+                        .build();
+
+
         googlePlacesService = new Retrofit.Builder()
                 .baseUrl("https://maps.googleapis.com/")
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
                 .build()
                 .create(GooglePlacesService.class);
     }
@@ -41,6 +58,8 @@ public class RestaurantRepository {
         return restaurantRepository;
     }
 
+
+
     public void searchRestaurants(String latlng){
         Log.d(TAG, "searchRestaurants: is Called");
         // TODO : Move key to BuildConfig. ...
@@ -53,7 +72,6 @@ public class RestaurantRepository {
                             listOfRestaurants.postValue(response.body());
                         } else {
 
-                            Log.d(TAG, "onResponse: body might be null");
                         }
                     }
 
