@@ -1,182 +1,195 @@
 package com.example.go4lunch.model.AppModel;
 
-import com.example.go4lunch.model.GooglePlacesModel.GeometryModel;
-import com.example.go4lunch.model.GooglePlacesModel.PhotoModel;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import androidx.annotation.Nullable;
 
+import com.example.go4lunch.model.GooglePlacesModel.PlaceModel;
+
+
+import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Objects;
 
 public class Restaurant {
+    private String restaurantId;
+    private String restaurantName;
+    private String address;
+    private double latitude;
+    private double longitude;
+    private double distanceUser;
+    private int joiningNumber=0;
+    @Nullable
+    private String photoReference;
 
-    @SerializedName("business_status")
-    @Expose
-    private String businessStatus;
-
-    @SerializedName("geometry")
-    @Expose
-    private GeometryModel geometry;
-
-    @SerializedName("icon")
-    @Expose
-    private String icon;
-
-    @SerializedName("name")
-    @Expose
-    private String name;
-
-    @SerializedName("obfuscated_type")
-    @Expose
-    private List<Object> obfuscatedType = null;
-
-    @SerializedName("photos")
-    @Expose
-    private List<PhotoModel> photos = null;
-
-    @SerializedName("place_id")
-    @Expose
-    private String placeId;
+    @Nullable
+    private Boolean openNow;
+    @Nullable
+    private List<String> favoriteUserList = new ArrayList<>();
+    @Nullable
+    private String phone="";
+    @Nullable
+    private String website="";
 
 
-    @SerializedName("rating")
-    @Expose
-    private Double rating;
-
-    @SerializedName("reference")
-    @Expose
-    private String reference;
-
-    @SerializedName("scope")
-    @Expose
-    private String scope;
-
-    @SerializedName("types")
-    @Expose
-    private List<String> types = null;
-
-    @SerializedName("user_ratings_total")
-    @Expose
-    private Integer userRatingsTotal;
-
-    @SerializedName("vicinity")
-    @Expose
-    private String vicinity;
-
-    @Expose(serialize = false, deserialize = false)
-    private boolean isSaved;
-
-    public String getBusinessStatus() {
-        return businessStatus;
+    public Restaurant(String restaurantId, String restaurantName, String address, double latitude, double longitude){
+        this.restaurantId=restaurantId;
+        this.restaurantName=restaurantName;
+        this.address=address;
+        this.latitude=latitude;
+        this.longitude=longitude;
     }
 
-    public void setBusinessStatus(String businessStatus) {
-        this.businessStatus = businessStatus;
+    public Restaurant(PlaceModel result) {
+        this.restaurantId = result.getPlaceId();
+        this.restaurantName = result.getName();
+        this.address = result.getVicinity();
+        this.latitude = result.getGeometry().getLocation().getLat();
+        this.longitude = result.getGeometry().getLocation().getLng();
+        if(result.getPhotos()!=null && !result.getPhotos().isEmpty())
+        this.photoReference = result.getPhotos().get(0).getPhotoReference();
+        if(result.getOpeningHours()!=null)
+        {
+            if(result.getOpeningHours().getOpenNow()!=null)
+            {
+                this.openNow=result.getOpeningHours().getOpenNow();
+            }
+        }
+
     }
 
-    public GeometryModel getGeometry() {
-        return geometry;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Restaurant that = (Restaurant) o;
+        return Objects.equals(restaurantId, that.restaurantId);
     }
 
-    public void setGeometry(GeometryModel geometry) {
-        this.geometry = geometry;
+    @Nullable
+    public String getPhone() {
+        return phone;
     }
 
-    public String getIcon() {
-        return icon;
+    public void setPhone(@Nullable String phone) {
+        this.phone = phone;
     }
 
-    public void setIcon(String icon) {
-        this.icon = icon;
+    @Nullable
+    public String getWebsite() {
+        return website;
     }
 
-    public String getName() {
-        return name;
+    public void setWebsite(@Nullable String website) {
+        this.website = website;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    @Nullable
+    public Boolean getOpenNow() {
+        return openNow;
     }
 
-    public List<Object> getObfuscatedType() {
-        return obfuscatedType;
+    public void setOpenNow(@Nullable Boolean openNow) {
+        this.openNow = openNow;
     }
 
-    public void setObfuscatedType(List<Object> obfuscatedType) {
-        this.obfuscatedType = obfuscatedType;
+    @Override
+    public int hashCode() {
+        return Objects.hash(restaurantId);
     }
 
 
-    public List<PhotoModel> getPhotos() {
-        return photos;
+    public String getPhotoReference() {
+        return photoReference;
     }
 
-    public void setPhotos(List<PhotoModel> photos) {
-        this.photos = photos;
+    public void setPhotoReference(String photoReference) {
+        this.photoReference = photoReference;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void resetUserToJoin()
+    {
+        this.joiningNumber=0;
+    }
+
+    public int getJoiningNumber() {
+        return joiningNumber;
+    }
+
+    public void setJoiningNumber(int joiningNumber) {
+        this.joiningNumber = joiningNumber;
+    }
+
+    public void setDistanceUser(double distanceUser) {
+        this.distanceUser = distanceUser;
+    }
+
+    public double getDistanceUser() {
+        return distanceUser;
+    }
+
+    public void setFavoriteUserList(@Nullable List<String> favoriteUserList) {
+        this.favoriteUserList = favoriteUserList;
+    }
+    public void updateFavoriteUserList(String currentUserId)
+    {
+        if(isAlreadyFavorite(currentUserId))
+        {
+            Objects.requireNonNull(favoriteUserList).remove(currentUserId);
+        }
+        else
+        {
+            Objects.requireNonNull(favoriteUserList).add(currentUserId);
+        }
+    }
+    public Boolean isAlreadyFavorite(String currentUserId)
+    {
+        return Objects.requireNonNull(favoriteUserList).contains(currentUserId);
+    }
+
+    public void addFavoriteUser(String userId)
+    {
+        Objects.requireNonNull(favoriteUserList).add(userId);
+    }
+    public void removeFavoriteUser(String userId)
+    {
+        Objects.requireNonNull(favoriteUserList).remove(userId);
+    }
+
+    @Nullable
+    public List<String> getFavoriteUserList() {
+        return favoriteUserList;
     }
 
     public String getPlaceId() {
-        return placeId;
+        return restaurantId;
     }
 
     public void setPlaceId(String placeId) {
-        this.placeId = placeId;
+        this.restaurantId = placeId;
     }
 
-
-    public Double getRating() {
-        return rating;
+    public String getRestaurantName() {
+        return restaurantName;
     }
 
-    public void setRating(Double rating) {
-        this.rating = rating;
-    }
-
-    public String getReference() {
-        return reference;
-    }
-
-    public void setReference(String reference) {
-        this.reference = reference;
-    }
-
-    public String getScope() {
-        return scope;
-    }
-
-    public void setScope(String scope) {
-        this.scope = scope;
-    }
-
-    public List<String> getTypes() {
-        return types;
-    }
-
-    public void setTypes(List<String> types) {
-        this.types = types;
-    }
-
-    public Integer getUserRatingsTotal() {
-        return userRatingsTotal;
-    }
-
-    public void setUserRatingsTotal(Integer userRatingsTotal) {
-        this.userRatingsTotal = userRatingsTotal;
+    public void setRestaurantName(String restaurantName) {
+        this.restaurantName = restaurantName;
     }
 
     public String getVicinity() {
-        return vicinity;
+        return address;
     }
 
     public void setVicinity(String vicinity) {
-        this.vicinity = vicinity;
+        this.address = vicinity;
     }
 
-    public boolean isSaved() {
-        return isSaved;
-    }
 
-    public void setSaved(boolean saved) {
-        isSaved = saved;
-    }
 }

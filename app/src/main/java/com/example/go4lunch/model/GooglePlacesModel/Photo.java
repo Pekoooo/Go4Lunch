@@ -5,11 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class PhotoModel {
-
-    /**
-     * Return photo of the place
-     */
+public class Photo {
 
     @SerializedName("height")
     @Expose

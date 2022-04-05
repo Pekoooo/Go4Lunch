@@ -31,9 +31,10 @@ import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, EasyPermissions.PermissionCallbacks {
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 123;
+
     private static final int RC_SIGN_IN = 1606;
     private static final int ERROR_DIALOG_REQUEST = 1989;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 123;
     private DrawerLayout drawer;
     private static final String TAG = "MyMainActivity";
     private ActivityMainBinding binding;
@@ -41,23 +42,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
         initUi();
         getLocationPermission();
         //startSignInActivity();
     }
 
-    @AfterPermissionGranted(LOCATION_PERMISSION_REQUEST_CODE)
-    private void getLocationPermission() {
-        Log.d(TAG, "getLocationPermission: is called");
-        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
-        if (EasyPermissions.hasPermissions(this, perms)) {
-            initFragments();
-        } else {
-            EasyPermissions.requestPermissions(this, getString(R.string.rationale), LOCATION_PERMISSION_REQUEST_CODE, perms);
-        }
-    }
+
+
+
 
  //   private void startSignInActivity() {
  //       // Choose authentication providers
@@ -77,6 +70,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
  //               RC_SIGN_IN);
  //   }
 
+    @AfterPermissionGranted(LOCATION_PERMISSION_REQUEST_CODE)
+    private void getLocationPermission() {
+        Log.d(TAG, "getLocationPermission: is called");
+        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            initFragments();
+        } else {
+            EasyPermissions.requestPermissions(this, getString(R.string.rationale), LOCATION_PERMISSION_REQUEST_CODE, perms);
+        }
+    }
+
     private void initFragments() {
         Log.d(TAG, "initFragments: Initializing the fragments");
         //initFragments fragment
@@ -87,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .beginTransaction()
                 .replace(R.id.fragment, fragment)
                 .commit();
+
     }
 
     private void initUi() {
@@ -148,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
         initFragments();
+
     }
 
     @Override

@@ -14,15 +14,13 @@ public class GeometryModel {
 
     @SerializedName("location")
     @Expose
-    private Location location;
+    private LocationModel location;
 
-    public Location getLocation() {
+    public LocationModel getLocation() {
         return location;
     }
 
-    public void setLocation(Location location) {
+    public void setLocation(LocationModel location) {
         this.location = location;
     }
-
-
 }

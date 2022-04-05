@@ -1,6 +1,5 @@
 package com.example.go4lunch.model.GooglePlacesModel;
 
-import com.example.go4lunch.model.AppModel.Restaurant;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -10,7 +9,7 @@ public class GoogleResponseModel {
 
     @SerializedName("results")
     @Expose
-    private List<Restaurant> results = null;
+    private List<PlaceModel> results = null;
 
     @SerializedName("error_message")
     @Expose
@@ -20,11 +19,11 @@ public class GoogleResponseModel {
         return error;
     }
 
-    public List<Restaurant> getResults() {
+    public List<PlaceModel> getResults() {
         return results;
     }
 
-    public void setResults(List<Restaurant> results) {
+    public void setResults(List<PlaceModel> results) {
         this.results = results;
     }
 

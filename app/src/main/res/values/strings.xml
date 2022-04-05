@@ -15,4 +15,6 @@
     <string name="pref_radius_key">radius</string>
     <string name="SEARCH_TYPE">restaurant</string>
     <string name="GOOGLE_API_KEY">AIzaSyDwt4HaFs_pyttzXrf9lEZF5IMgyDkVcN4</string>
+    <string name="open">Open now</string>
+    <string name="close">Closed now</string>
 </resources>
