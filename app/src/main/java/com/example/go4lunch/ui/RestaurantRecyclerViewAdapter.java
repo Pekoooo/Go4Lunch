@@ -1,5 +1,8 @@
 package com.example.go4lunch.ui;
 
+import static android.graphics.Color.RED;
+
+import android.graphics.Color;
 import android.location.Location;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,9 +12,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.go4lunch.R;
 import com.example.go4lunch.model.GooglePlacesModel.PlaceModel;
@@ -23,12 +29,18 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
     private List<PlaceModel> place;
     private final Location currentLocation;
     private static final String TAG = "MyRestoRecyclerView";
+    private final OnItemClickListener onItemClickListener;
 
-    public RestaurantRecyclerViewAdapter(List<PlaceModel> placeModels, Location currentLocation) {
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
+
+
+    public RestaurantRecyclerViewAdapter(List<PlaceModel> placeModels, Location currentLocation, OnItemClickListener onItemClickListener) {
         Log.d(TAG, "RestaurantRecyclerViewAdapter: constructor is being called");
         this.place = placeModels;
         this.currentLocation = currentLocation;
-
+        this.onItemClickListener = onItemClickListener;
     }
 
     @NonNull
@@ -38,12 +50,12 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.restaurant_list_row, parent, false);
 
-        return new RestaurantResultHolder(itemView);
+        return new RestaurantRecyclerViewAdapter.RestaurantResultHolder(itemView, onItemClickListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RestaurantRecyclerViewAdapter.RestaurantResultHolder holder, int position) {
-        Log.d(TAG, "onBindViewHolder: is Called");
+        Log.d(TAG, "onBindViewHolder: is Called" );
 
         //Gets the current restaurant
         PlaceModel currentPlaceModel = place.get(position);
@@ -68,19 +80,22 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         holder.restaurantName.setText(currentPlaceModel.getName());
         holder.restaurantInfo.setText(currentPlaceModel.getVicinity());
         holder.restaurantStars.setText(String.valueOf(currentPlaceModel.getRating()));
-        holder.restaurantDistance.setText(String.valueOf(Math.round(distance)));
+        holder.restaurantDistance.setText(Math.round(distance) + "m");
         //holder.coworkersGoing.setText(currentPlaceModel.getName());
 
         if (currentPlaceModel.getOpeningHours().getOpenNow()){
             holder.openOrClosed.setText(R.string.open);
         } else {
             holder.openOrClosed.setText(R.string.close);
+            holder.openOrClosed.setTextColor(RED);
         }
 
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
 
        Glide.with(holder.restaurantImage.getContext())
                .load(PlacePhotoApiCall)
-               .apply(RequestOptions.circleCropTransform())
+               .apply(requestOptions)
                .into(holder.restaurantImage);
 
     }
@@ -97,7 +112,7 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         notifyDataSetChanged();
     }
 
-    static class RestaurantResultHolder extends RecyclerView.ViewHolder {
+    static class RestaurantResultHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
        private final TextView restaurantName;
        private final TextView restaurantInfo;
@@ -107,8 +122,12 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
        private final TextView restaurantStars;
        private final ImageView restaurantImage;
 
-        public RestaurantResultHolder(@NonNull View itemView) {
+       OnItemClickListener onItemClickListener;
+
+        public RestaurantResultHolder(@NonNull View itemView, OnItemClickListener onItemClickListener) {
             super(itemView);
+            itemView.setOnClickListener(this);
+            this.onItemClickListener = onItemClickListener;
 
            restaurantName     = itemView.findViewById(R.id.restaurant_name);
            restaurantInfo     = itemView.findViewById(R.id.restaurant_info);
@@ -117,8 +136,12 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
            coworkersGoing     = itemView.findViewById(R.id.number_coworkers_going);
            restaurantStars    = itemView.findViewById(R.id.restaurant_stars);
            restaurantImage    = itemView.findViewById(R.id.restaurant_image);
+        }
 
-
+        @Override
+        public void onClick(View v) {
+            Log.d(TAG, "onClick: is called");
+            onItemClickListener.onItemClick(getAdapterPosition());
         }
     }
 }

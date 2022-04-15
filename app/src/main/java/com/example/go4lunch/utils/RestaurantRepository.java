@@ -4,11 +4,13 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.go4lunch.model.GooglePlacesModel.GoogleResponseModel;
+import com.example.go4lunch.BuildConfig;
+import com.example.go4lunch.model.GooglePlacesModel.NearbyResponseModel;
+import com.example.go4lunch.model.GooglePlacesModel.PlaceDetailResponseModel;
+import com.example.go4lunch.service.GoogleDetailsService;
 import com.example.go4lunch.service.GooglePlacesService;
 
 import okhttp3.OkHttpClient;
-import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -20,16 +22,19 @@ public class RestaurantRepository {
 
     private static final int DEFAULT_RADIUS_SEARCH = 500;
     private static final int DEFAULT_MAX_WIDTH = 600;
+    private static final String FIELDS = "place_id,international_phone_number,opening_hours,website";
     private final String DEFAULT_TYPE_SEARCH = "restaurant";
     private static RestaurantRepository restaurantRepository;
     private final GooglePlacesService googlePlacesService;
+    private final GoogleDetailsService googleDetailsService;
     private static final String TAG = "MyRestaurantRepository";
-    private final MutableLiveData<GoogleResponseModel> listOfRestaurants;
-    private  String restaurantPictureURL;
+    private final MutableLiveData<NearbyResponseModel> listOfRestaurants;
+    private final MutableLiveData<PlaceDetailResponseModel> placeDetails;
 
 
     public RestaurantRepository() {
         listOfRestaurants = new MutableLiveData<>();
+        placeDetails = new MutableLiveData<>();
 
 
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
@@ -41,14 +46,20 @@ public class RestaurantRepository {
                                loggingInterceptor
                         )
                         .build();
-
-
+        
         googlePlacesService = new Retrofit.Builder()
                 .baseUrl("https://maps.googleapis.com/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build()
                 .create(GooglePlacesService.class);
+
+        googleDetailsService = new Retrofit.Builder()
+                .baseUrl("https://maps.googleapis.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build()
+                .create(GoogleDetailsService.class);
 
 
     }
@@ -66,37 +77,57 @@ public class RestaurantRepository {
 
     public void searchRestaurants(String latlng){
         Log.d(TAG, "searchRestaurants: is Called");
-        // TODO : Move key to BuildConfig. ...
 
-        googlePlacesService.searchRestaurants(latlng, DEFAULT_TYPE_SEARCH, DEFAULT_RADIUS_SEARCH, "AIzaSyDwt4HaFs_pyttzXrf9lEZF5IMgyDkVcN4")
-                .enqueue(new Callback<GoogleResponseModel>() {
+        googlePlacesService.searchRestaurants(latlng, DEFAULT_TYPE_SEARCH, DEFAULT_RADIUS_SEARCH, BuildConfig.API_KEY)
+                .enqueue(new Callback<NearbyResponseModel>() {
                     @Override
-                    public void onResponse(Call<GoogleResponseModel> call, Response<GoogleResponseModel> response) {
+                    public void onResponse(Call<NearbyResponseModel> call, Response<NearbyResponseModel> response) {
                         if(response.body() != null){
-                            Log.d(TAG, "onResponse: API Call succeeded");
+                            Log.d(TAG, "onResponse: Google places API call succeeded");
                             listOfRestaurants.postValue(response.body());
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<GoogleResponseModel> call, Throwable t) {
-                        Log.d(TAG, "onFailure: API Call failed");
+                    public void onFailure(Call<NearbyResponseModel> call, Throwable t) {
+                        Log.d(TAG, "onFailure: Google places API call failed" + t.getCause());
                         listOfRestaurants.postValue(null);
 
                     }
                 });
     }
-    
 
 
-    public MutableLiveData<GoogleResponseModel> getListOfRestaurants() {
+    public void searchPlaceDetail(String placeId){
+        Log.d(TAG, "searchPlaceDetail: is Called");
+        // TODO : Move key to BuildConfig. ...
+        
+        googleDetailsService.getDetails(placeId, "AIzaSyDwt4HaFs_pyttzXrf9lEZF5IMgyDkVcN4")
+                .enqueue(new Callback<PlaceDetailResponseModel>() {
+                    @Override
+                    public void onResponse(Call<PlaceDetailResponseModel> call, Response<PlaceDetailResponseModel> response) {
+                        if(response.body() != null){
+                            Log.d(TAG, "onResponse: Google places detail API call succeeded");
+                            placeDetails.postValue(response.body());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<PlaceDetailResponseModel> call, Throwable t) {
+                        Log.d(TAG, "onFailure: Google places detail API call failed");
+                        placeDetails.postValue(null);
+                    }
+                });
+    }
+
+    public MutableLiveData<NearbyResponseModel> getListOfRestaurants() {
         return listOfRestaurants;
     }
 
-    public String getRestaurantPictureURL() {
-        
-        return restaurantPictureURL;
+    public MutableLiveData<PlaceDetailResponseModel> getPlaceDetails() {
+        return placeDetails;
     }
+
 }
 
 

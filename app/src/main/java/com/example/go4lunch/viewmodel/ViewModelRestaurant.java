@@ -8,16 +8,16 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.go4lunch.model.GooglePlacesModel.GoogleResponseModel;
+import com.example.go4lunch.model.GooglePlacesModel.NearbyResponseModel;
+import com.example.go4lunch.model.GooglePlacesModel.PlaceDetailResponseModel;
 import com.example.go4lunch.utils.RestaurantRepository;
 
 public class ViewModelRestaurant extends AndroidViewModel {
 
     private static final String TAG = "MyViewModelRestaurant";
     private RestaurantRepository restaurantRepository;
-    private MutableLiveData<GoogleResponseModel> listOfRestaurants;
+    private MutableLiveData<NearbyResponseModel> listOfRestaurants;
     public MutableLiveData<Location> location = new MutableLiveData<>();
-
 
 
     public ViewModelRestaurant(@NonNull Application application) {
@@ -27,16 +27,13 @@ public class ViewModelRestaurant extends AndroidViewModel {
     }
 
     public void init() {
-
         restaurantRepository = new RestaurantRepository();
         listOfRestaurants = restaurantRepository.getListOfRestaurants();
     }
 
     public void sendLocation(Location location){
-        Log.d(TAG, "sendLocation: receiving location object in sharedViewmodel " + location.getLatitude() + " , " + location.getLongitude());
-         this.location.setValue(location);
-        Log.d(TAG, "sendLocation: test location object = " + this.location.getValue().getLatitude());
-
+        Log.d(TAG, "sendLocation: is called, receiving location: " + location.getLatitude());
+         this.location.postValue(location);
     }
 
 
@@ -45,13 +42,8 @@ public class ViewModelRestaurant extends AndroidViewModel {
         restaurantRepository.searchRestaurants(latlng);
     }
 
-    public MutableLiveData<Location> getLocation() {
-        return location;
 
-    }
-
-
-    public MutableLiveData<GoogleResponseModel> getListOfRestaurants(){
+    public MutableLiveData<NearbyResponseModel> getListOfRestaurants(){
         return listOfRestaurants;
     }
 

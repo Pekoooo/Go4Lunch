@@ -48,10 +48,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //startSignInActivity();
     }
 
-
-
-
-
  //   private void startSignInActivity() {
  //       // Choose authentication providers
  //       List<AuthUI.IdpConfig> providers = Arrays.asList(
@@ -74,25 +70,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void getLocationPermission() {
         Log.d(TAG, "getLocationPermission: is called");
         String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
-        if (EasyPermissions.hasPermissions(this, perms)) {
-            initFragments();
-        } else {
+        if (!EasyPermissions.hasPermissions(this, perms)) {
             EasyPermissions.requestPermissions(this, getString(R.string.rationale), LOCATION_PERMISSION_REQUEST_CODE, perms);
         }
-    }
 
-    private void initFragments() {
-        Log.d(TAG, "initFragments: Initializing the fragments");
-        //initFragments fragment
-        Fragment fragment = new Fragment();
-
-        //Open Fragment
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment, fragment)
-                .commit();
 
     }
+
 
     private void initUi() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav_view);
@@ -142,17 +126,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.d(TAG, "onRequestPermissionsResult: getting permissions result");
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
 
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-        initFragments();
+        Log.d(TAG, "onPermissionsGranted: permission granted");
 
     }
 
@@ -171,7 +148,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE) {
-            initFragments();
             Toast.makeText(this, "Current Location", Toast.LENGTH_SHORT).show();
         }
     }

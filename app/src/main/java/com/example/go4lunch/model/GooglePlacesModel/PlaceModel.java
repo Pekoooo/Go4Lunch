@@ -1,12 +1,15 @@
 package com.example.go4lunch.model.GooglePlacesModel;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
 
-public class PlaceModel {
+public class PlaceModel implements Parcelable {
 
     @SerializedName("business_status")
     @Expose
@@ -65,14 +68,93 @@ public class PlaceModel {
 
     @SerializedName("opening_hours")
     @Expose
-    private OpeningHours openingHours;
+    private OpeningHoursModel mOpeningHoursModel;
 
-    public OpeningHours getOpeningHours() {
-        return openingHours;
+    @SerializedName("website")
+    @Expose
+    private String website;
+    @SerializedName("formatted_address")
+    @Expose
+    private String address;
+    @SerializedName("international_phone_number")
+    @Expose
+    private String phone;
+
+    protected PlaceModel(Parcel in) {
+        businessStatus = in.readString();
+        icon = in.readString();
+        name = in.readString();
+        placeId = in.readString();
+        if (in.readByte() == 0) {
+            rating = null;
+        } else {
+            rating = in.readDouble();
+        }
+        reference = in.readString();
+        scope = in.readString();
+        types = in.createStringArrayList();
+        if (in.readByte() == 0) {
+            userRatingsTotal = null;
+        } else {
+            userRatingsTotal = in.readInt();
+        }
+        vicinity = in.readString();
+        website = in.readString();
+        address = in.readString();
+        phone = in.readString();
+        isSaved = in.readByte() != 0;
     }
 
-    public void setOpeningHours(OpeningHours openingHours) {
-        this.openingHours = openingHours;
+    public static final Creator<PlaceModel> CREATOR = new Creator<PlaceModel>() {
+        @Override
+        public PlaceModel createFromParcel(Parcel in) {
+            return new PlaceModel(in);
+        }
+
+        @Override
+        public PlaceModel[] newArray(int size) {
+            return new PlaceModel[size];
+        }
+    };
+
+    public OpeningHoursModel getOpeningHoursModel() {
+        return mOpeningHoursModel;
+    }
+
+    public void setOpeningHoursModel(OpeningHoursModel openingHoursModel) {
+        mOpeningHoursModel = openingHoursModel;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public OpeningHoursModel getOpeningHours() {
+        return mOpeningHoursModel;
+    }
+
+    public void setOpeningHours(OpeningHoursModel openingHoursModel) {
+        this.mOpeningHoursModel = openingHoursModel;
     }
 
     @Expose(serialize = false, deserialize = false)
@@ -190,5 +272,38 @@ public class PlaceModel {
 
     public void setSaved(boolean saved) {
         isSaved = saved;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(businessStatus);
+        dest.writeString(icon);
+        dest.writeString(name);
+        dest.writeString(placeId);
+        if (rating == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeDouble(rating);
+        }
+        dest.writeString(reference);
+        dest.writeString(scope);
+        dest.writeStringList(types);
+        if (userRatingsTotal == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(userRatingsTotal);
+        }
+        dest.writeString(vicinity);
+        dest.writeString(website);
+        dest.writeString(address);
+        dest.writeString(phone);
+        dest.writeByte((byte) (isSaved ? 1 : 0));
     }
 }
