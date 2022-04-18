@@ -1,6 +1,7 @@
 package com.example.go4lunch.ui;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -9,13 +10,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.go4lunch.R;
@@ -33,38 +34,48 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
+import kotlin.reflect.KFunction;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
 
-public class MapFragment extends Fragment implements OnMapReadyCallback {
+public class MapFragment extends Fragment implements OnMapReadyCallback, EasyPermissions.PermissionCallbacks {
     private static final String TAG = "MyMapFragment";
     private static final float DEFAULT_ZOOM = 15f;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 123;
     private LatLng cameraPosition;
     private GoogleMap gMap;
     private Location currentLocation;
     private ViewModelRestaurant viewModelRestaurant;
+    private String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView: is called");
-
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
 
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onViewCreated: is called");
         super.onViewCreated(view, savedInstanceState);
         viewModelRestaurant = new ViewModelProvider(requireActivity()).get(ViewModelRestaurant.class);
-
+        zoomOnLocation();
         initMap();
-        getDeviceLocation();
+        setButtons(view);
+    }
 
+    private void setButtons(View view) {
         FloatingActionButton centerUserBtn = view.findViewById(R.id.gps_center_on_user);
         centerUserBtn.setOnClickListener(v -> {
 
-            if(currentLocation != null){
+            if (currentLocation != null) {
                 moveCamera(new LatLng(
                                 currentLocation.getLatitude(),
                                 currentLocation.getLongitude()),
@@ -74,9 +85,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
+    @AfterPermissionGranted(LOCATION_PERMISSION_REQUEST_CODE)
+    private void zoomOnLocation(){
+        Log.d(TAG, "zoomOnLocation: is called");
+
+        if(EasyPermissions.hasPermissions(requireContext(), perms)){
+            Log.d(TAG, "zoomOnLocation: perms granted");
+            getDeviceLocation();
+
+        } else {
+            Log.d(TAG, "zoomOnLocation: requesting perms");
+            EasyPermissions.requestPermissions(this, getString(R.string.rationale), LOCATION_PERMISSION_REQUEST_CODE, perms);
+        }
+    }
+
     private void getNearbyRestaurants() {
         String latlng = currentLocation.getLatitude() + "," + currentLocation.getLongitude();
-        Log.d(TAG, "getNearbyRestaurants: current location = " + currentLocation.getLatitude() + "," + currentLocation.getLongitude());
+        Log.d(TAG, "getNearbyRestaurants: current location = " + latlng);
         viewModelRestaurant.searchRestaurants(latlng);
         viewModelRestaurant.sendLocation(currentLocation);
     }
@@ -94,19 +119,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void initMap() {
-        Log.d(TAG, "initMap: Initializing map");
         //Initialize map fragment
         SupportMapFragment supportMapFragment = (SupportMapFragment)
                 getChildFragmentManager().findFragmentById(R.id.google_map);
 
         if (supportMapFragment != null) {
-            Log.d(TAG, "initMap: getting map async");
+            Log.d(TAG, "initMap: Initializing map");
             supportMapFragment.getMapAsync(MapFragment.this);
+        } else if (supportMapFragment == null) {
+            Log.d(TAG, "initMap: Initializing map failed");
         }
     }
 
-    void getDeviceLocation() {
-        Log.d(TAG, "getDeviceLocation: getting the device current location");
+
+    private void getDeviceLocation() {
         FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
         try {
             final Task<Location> location = fusedLocationProviderClient.getLastLocation();
@@ -116,8 +142,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "onComplete: Found location");
                         currentLocation = (Location) task.getResult();
+                        getNearbyRestaurants();
 
-                        if(cameraPosition == null){
+                        if (cameraPosition == null) {
                             moveCamera(new LatLng(
                                             currentLocation.getLatitude(),
                                             currentLocation.getLongitude()),
@@ -139,12 +166,38 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
 
-
-
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        Log.d(TAG, "onPermissionsGranted: permission granted");
+        initMap();
+    }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        cameraPosition = gMap.getCameraPosition().target;
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        Log.d(TAG, "onPermissionsDenied: called in FRAGMENT");
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            new AppSettingsDialog.Builder(this).build().show();
+        } else  {
+
+            EasyPermissions.requestPermissions(this, getString(R.string.rationale),
+                    LOCATION_PERMISSION_REQUEST_CODE, this.perms);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.d(TAG, "onRequestPermissionsResult: called in MAP FRAGMENT");
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        Log.d(TAG, "onActivityResult: is called");
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE) {
+            Toast.makeText(requireContext(), "Current Location", Toast.LENGTH_SHORT).show();
+        }
     }
 }

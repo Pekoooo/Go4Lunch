@@ -1,24 +1,37 @@
 package com.example.go4lunch.ui;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.R;
+import com.example.go4lunch.model.AppModel.Coworker;
 import com.example.go4lunch.model.AppModel.Restaurant;
 import com.example.go4lunch.model.GooglePlacesModel.PlaceModel;
 import com.example.go4lunch.viewmodel.ViewModelDetailedView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DetailedActivity extends AppCompatActivity {
 
     private static final String TAG = "MyDetailedActivity";
+    private List<Coworker> coworkerList = new ArrayList<>();
     private PlaceModel placeDetailResult;
 
 
@@ -29,7 +42,6 @@ public class DetailedActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detailed);
 
         ViewModelDetailedView viewModel = new ViewModelProvider(this).get(ViewModelDetailedView.class);
-        //viewModel.init();
 
         if(getIntent().hasExtra("placeDetails")){
             Log.d(TAG, "onCreate: receiving place id from list fragment");
@@ -47,7 +59,11 @@ public class DetailedActivity extends AppCompatActivity {
 
             });
         }
+
+
     }
+
+
 
     private void setDetails() {
 
@@ -61,7 +77,10 @@ public class DetailedActivity extends AppCompatActivity {
 
         String PlacePhotoApiCall = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference="
                 + placeDetailResult.getPhotos().get(0).getPhotoReference()
+                +"&key="
                 + BuildConfig.API_KEY;
+
+        Log.d(TAG, "setDetails: photo :" + PlacePhotoApiCall);
 
         Glide.with(restaurantImage.getContext())
                 .load(PlacePhotoApiCall)

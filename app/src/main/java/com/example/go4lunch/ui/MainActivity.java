@@ -30,7 +30,7 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, EasyPermissions.PermissionCallbacks {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     private static final int RC_SIGN_IN = 1606;
     private static final int ERROR_DIALOG_REQUEST = 1989;
@@ -41,10 +41,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: is called");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initUi();
-        getLocationPermission();
         //startSignInActivity();
     }
 
@@ -65,17 +65,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
  //                       .build(),
  //               RC_SIGN_IN);
  //   }
-
-    @AfterPermissionGranted(LOCATION_PERMISSION_REQUEST_CODE)
-    private void getLocationPermission() {
-        Log.d(TAG, "getLocationPermission: is called");
-        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
-        if (!EasyPermissions.hasPermissions(this, perms)) {
-            EasyPermissions.requestPermissions(this, getString(R.string.rationale), LOCATION_PERMISSION_REQUEST_CODE, perms);
-        }
-
-
-    }
 
 
     private void initUi() {
@@ -126,24 +115,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-
-    @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-        Log.d(TAG, "onPermissionsGranted: permission granted");
-
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        if (EasyPermissions.somePermissionDenied(this, perms.get(0))) {
-            EasyPermissions.requestPermissions(this, getString(R.string.rationale), LOCATION_PERMISSION_REQUEST_CODE, perms.get(0));
-
-        }
-        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-            new AppSettingsDialog.Builder(this).build().show();
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -151,4 +122,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(this, "Current Location", Toast.LENGTH_SHORT).show();
         }
     }
+
 }

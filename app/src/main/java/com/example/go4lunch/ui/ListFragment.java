@@ -78,8 +78,6 @@ public class ListFragment extends Fragment implements RestaurantRecyclerViewAdap
             currentLocation = location;
         });
 
-
-
         searchRestaurants();
     }
 
