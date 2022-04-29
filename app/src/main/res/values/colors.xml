@@ -7,7 +7,12 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="Twitter_blue">#50abf1</color>
+    <color name="Facebook_blue">#3b5998</color>
+    <color name="Email_red">#d0021a</color>
     <color name="Go4Lunch_Orange">#fc7540</color>
     <color name="Go4Lunch_grey">#a9a9a9</color>
+    <color name="green">#476930</color>
     <color name="red">#FF0000</color>
+    <color name="pink">#FFB6C1</color>
 </resources>

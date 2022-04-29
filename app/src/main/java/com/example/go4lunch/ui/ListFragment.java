@@ -16,8 +16,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.go4lunch.R;
-import com.example.go4lunch.model.AppModel.Restaurant;
+import com.example.go4lunch.databinding.FragmentListRestaurantBinding;
 import com.example.go4lunch.model.GooglePlacesModel.PlaceModel;
 import com.example.go4lunch.viewmodel.ViewModelRestaurant;
 
@@ -30,11 +29,9 @@ public class ListFragment extends Fragment implements RestaurantRecyclerViewAdap
     private static final String TAG = "MyListFragment";
     private ViewModelRestaurant viewModel;
     private RestaurantRecyclerViewAdapter adapter;
+    private FragmentListRestaurantBinding binding;
     private Location currentLocation;
     private List<PlaceModel> places = new ArrayList<>();
-    private RecyclerView recyclerView;
-    private PlaceModel placeDetailResult;
-    private Restaurant restaurantToDisplay;
 
 
     @Override
@@ -45,17 +42,13 @@ public class ListFragment extends Fragment implements RestaurantRecyclerViewAdap
         viewModel.init();
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView: is called");
-        View v = inflater.inflate(R.layout.fragment_list_restaurant, container, false);
+     @Override
+     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                              Bundle savedInstanceState) {
 
-        recyclerView = v.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        return v;
-    }
-
+         binding = FragmentListRestaurantBinding.inflate(inflater, container, false);
+         return binding.getRoot();
+     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -90,18 +83,17 @@ public class ListFragment extends Fragment implements RestaurantRecyclerViewAdap
 
     public void setRecyclerView() {
         Log.d(TAG, "setRecyclerView: is called");
+        binding.recyclerView.setHasFixedSize(true);
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new RestaurantRecyclerViewAdapter(places, currentLocation, this);
-        recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
+        binding.recyclerView.setAdapter(adapter);
+        binding.recyclerView.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
     }
 
     @Override
     public void onItemClick(int position) {
         Log.d(TAG, "onItemClick: is called");
-
         String placeId = places.get(position).getPlaceId();
-
-
         Intent intent = new Intent(requireContext(), DetailedActivity.class);
         intent.putExtra("placeDetails", placeId);
 

@@ -32,13 +32,11 @@ public class ViewModelRestaurant extends AndroidViewModel {
     }
 
     public void sendLocation(Location location){
-        Log.d(TAG, "sendLocation: is called, receiving location: " + location.getLatitude());
          this.location.postValue(location);
     }
 
 
     public void searchRestaurants(String latlng) {
-        Log.d(TAG, "searchRestaurants: is Called");
         restaurantRepository.searchRestaurants(latlng);
     }
 

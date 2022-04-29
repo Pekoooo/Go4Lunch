@@ -1,15 +1,53 @@
 {
   "project_info": {
     "project_number": "217250388567",
+    "firebase_url": "https://go4lunch-343817-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "go4lunch-343817",
     "storage_bucket": "go4lunch-343817.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:217250388567:android:1e5ded9b0b11be4de82112",
+        "mobilesdk_app_id": "1:217250388567:android:b58a0416e1da3229e82112",
         "android_client_info": {
           "package_name": "com.example.go4lunch"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "217250388567-2qa3tbitufgc5cqcgkmk8d8m83uv1au2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.go4lunch",
+            "certificate_hash": "fe152a20aeb7c7220909ce33b53304940b8cbe42"
+          }
+        },
+        {
+          "client_id": "217250388567-p761de50eot8eio9kkph2jfgmn1p02f7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwt4HaFs_pyttzXrf9lEZF5IMgyDkVcN4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "217250388567-p761de50eot8eio9kkph2jfgmn1p02f7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:217250388567:android:1e5ded9b0b11be4de82112",
+        "android_client_info": {
+          "package_name": "com.openclassrooms.Go4lunch"
         }
       },
       "oauth_client": [
@@ -17,7 +55,7 @@
           "client_id": "217250388567-vllor5eguguincvcrb1fqb7p0m614ov9.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.go4lunch",
+            "package_name": "com.openclassrooms.Go4lunch",
             "certificate_hash": "fe152a20aeb7c7220909ce33b53304940b8cbe42"
           }
         },

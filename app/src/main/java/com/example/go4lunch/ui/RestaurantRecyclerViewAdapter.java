@@ -46,7 +46,6 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
     @NonNull
     @Override
     public RestaurantRecyclerViewAdapter.RestaurantResultHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Log.d(TAG, "onCreateViewHolder: Creating ViewHolder");
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.restaurant_list_row, parent, false);
 
@@ -55,7 +54,6 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
 
     @Override
     public void onBindViewHolder(@NonNull RestaurantRecyclerViewAdapter.RestaurantResultHolder holder, int position) {
-        Log.d(TAG, "onBindViewHolder: is Called" );
 
         //Gets the current restaurant
         PlaceModel currentPlaceModel = place.get(position);
@@ -81,7 +79,7 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         holder.restaurantInfo.setText(currentPlaceModel.getVicinity());
         holder.restaurantStars.setText(String.valueOf(currentPlaceModel.getRating()));
         holder.restaurantDistance.setText(Math.round(distance) + "m");
-        //holder.coworkersGoing.setText(currentPlaceModel.getName());
+        //holder.coworkersGoing.setText(firebase database...);
 
         if (currentPlaceModel.getOpeningHours().getOpenNow()){
             holder.openOrClosed.setText(R.string.open);
@@ -102,7 +100,6 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
 
     @Override
     public int getItemCount() {
-        Log.d(TAG, "getItemCount: is Called");
         return place.size();
     }
 

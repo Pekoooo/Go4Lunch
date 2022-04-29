@@ -9,16 +9,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.go4lunch.R;
-import com.example.go4lunch.model.AppModel.Coworker;
+import com.example.go4lunch.model.AppModel.User;
 
 import java.util.List;
 
 public class CoworkersDetailedViewAdapter extends RecyclerView.Adapter<CoworkersDetailedViewAdapter.CoworkerJoiningHolder>{
-    private List<Coworker> coworkerList;
+    private List<User> mUserList;
 
-    public CoworkersDetailedViewAdapter(List<Coworker> coworkerList){
+    public CoworkersDetailedViewAdapter(List<User> userList){
 
-        this.coworkerList = coworkerList;
+        this.mUserList = userList;
 
 
     }

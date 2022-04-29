@@ -23,7 +23,6 @@ public class RestaurantRepository {
     private static final int DEFAULT_RADIUS_SEARCH = 500;
     private static final int DEFAULT_MAX_WIDTH = 600;
     private static final String FIELDS = "place_id,international_phone_number,opening_hours,website";
-    private final String DEFAULT_TYPE_SEARCH = "restaurant";
     private static RestaurantRepository restaurantRepository;
     private final GooglePlacesService googlePlacesService;
     private final GoogleDetailsService googleDetailsService;
@@ -60,8 +59,6 @@ public class RestaurantRepository {
                 .client(client)
                 .build()
                 .create(GoogleDetailsService.class);
-
-
     }
 
     public static RestaurantRepository getInstance() {
@@ -78,6 +75,7 @@ public class RestaurantRepository {
     public void searchRestaurants(String latlng){
         Log.d(TAG, "searchRestaurants: is Called");
 
+        String DEFAULT_TYPE_SEARCH = "restaurant";
         googlePlacesService.searchRestaurants(latlng, DEFAULT_TYPE_SEARCH, DEFAULT_RADIUS_SEARCH, BuildConfig.API_KEY)
                 .enqueue(new Callback<NearbyResponseModel>() {
                     @Override
@@ -102,7 +100,7 @@ public class RestaurantRepository {
         Log.d(TAG, "searchPlaceDetail: is Called");
         // TODO : Move key to BuildConfig. ...
         
-        googleDetailsService.getDetails(placeId, "AIzaSyDwt4HaFs_pyttzXrf9lEZF5IMgyDkVcN4")
+        googleDetailsService.getDetails(placeId, BuildConfig.API_KEY)
                 .enqueue(new Callback<PlaceDetailResponseModel>() {
                     @Override
                     public void onResponse(Call<PlaceDetailResponseModel> call, Response<PlaceDetailResponseModel> response) {

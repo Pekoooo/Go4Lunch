@@ -44,8 +44,8 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
-    implementation 'androidx.navigation:navigation-fragment:2.4.1'
-    implementation 'androidx.navigation:navigation-ui:2.4.1'
+    implementation 'androidx.navigation:navigation-fragment:2.4.2'
+    implementation 'androidx.navigation:navigation-ui:2.4.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
     implementation 'com.google.android.gms:play-services-location:19.0.1'
@@ -59,10 +59,17 @@ dependencies {
     //FIREBASE
     implementation platform('com.google.firebase:firebase-bom:29.2.0')
     implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-firestore'
+    implementation platform('com.google.firebase:firebase-bom:29.3.1')
+    implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-database'
 
     // FIREBASE UI
-    implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
+    implementation 'com.firebaseui:firebase-ui-auth:8.0.0'
     implementation 'pub.devrel:easypermissions:3.0.0'
+
+    //TwitterSDK
+    implementation 'com.twitter.sdk.android:twitter:3.1.1'
 
     // EASYPERMISSIONS
     implementation 'pub.devrel:easypermissions:3.0.0'
@@ -79,8 +86,6 @@ dependencies {
 
     //GLIDE
     implementation 'com.github.bumptech.glide:glide:4.12.0'
-
-
 }
 
 apply plugin: 'com.google.gms.google-services'

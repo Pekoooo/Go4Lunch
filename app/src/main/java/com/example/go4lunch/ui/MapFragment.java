@@ -20,6 +20,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.go4lunch.R;
+import com.example.go4lunch.databinding.FragmentMapBinding;
 import com.example.go4lunch.viewmodel.ViewModelRestaurant;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -42,25 +43,34 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, EasyPermissions.PermissionCallbacks {
     private static final String TAG = "MyMapFragment";
+    private FragmentMapBinding binding;
     private static final float DEFAULT_ZOOM = 15f;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 123;
     private LatLng cameraPosition;
     private GoogleMap gMap;
     private Location currentLocation;
     private ViewModelRestaurant viewModelRestaurant;
-    private String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+    private final String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+
 
     @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_map, container, false);
+
+        binding = FragmentMapBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
+    /**
+     * From dev.android.com →
+     * Note: Fragments outlive their views. Make sure you clean up any references
+     * to the binding class instance in the fragment's onDestroyView() method.
+     */
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -68,12 +78,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, EasyPer
         viewModelRestaurant = new ViewModelProvider(requireActivity()).get(ViewModelRestaurant.class);
         zoomOnLocation();
         initMap();
-        setButtons(view);
+        setButtons();
     }
 
-    private void setButtons(View view) {
-        FloatingActionButton centerUserBtn = view.findViewById(R.id.gps_center_on_user);
-        centerUserBtn.setOnClickListener(v -> {
+    private void setButtons() {
+        binding.gpsCenterOnUser.setOnClickListener(v -> {
 
             if (currentLocation != null) {
                 moveCamera(new LatLng(
@@ -86,10 +95,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, EasyPer
     }
 
     @AfterPermissionGranted(LOCATION_PERMISSION_REQUEST_CODE)
-    private void zoomOnLocation(){
+    private void zoomOnLocation() {
         Log.d(TAG, "zoomOnLocation: is called");
 
-        if(EasyPermissions.hasPermissions(requireContext(), perms)){
+        if (EasyPermissions.hasPermissions(requireContext(), perms)) {
             Log.d(TAG, "zoomOnLocation: perms granted");
             getDeviceLocation();
 
@@ -126,7 +135,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, EasyPer
         if (supportMapFragment != null) {
             Log.d(TAG, "initMap: Initializing map");
             supportMapFragment.getMapAsync(MapFragment.this);
-        } else if (supportMapFragment == null) {
+        } else {
             Log.d(TAG, "initMap: Initializing map failed");
         }
     }
@@ -174,11 +183,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, EasyPer
 
     @Override
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        Log.d(TAG, "onPermissionsDenied: called in FRAGMENT");
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            Log.d(TAG, "onPermissionsDenied: Some permissions permanently denied, asking user to change app settings");
             new AppSettingsDialog.Builder(this).build().show();
-        } else  {
 
+        } else {
+            Log.d(TAG, "onPermissionsDenied: requesting permission with rationale");
             EasyPermissions.requestPermissions(this, getString(R.string.rationale),
                     LOCATION_PERMISSION_REQUEST_CODE, this.perms);
         }
@@ -186,9 +196,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, EasyPer
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.d(TAG, "onRequestPermissionsResult: called in MAP FRAGMENT");
+        Log.d(TAG, "onRequestPermissionsResult: called");
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
@@ -197,7 +206,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, EasyPer
         Log.d(TAG, "onActivityResult: is called");
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE) {
-            Toast.makeText(requireContext(), "Current Location", Toast.LENGTH_SHORT).show();
+            initMap();
+            zoomOnLocation();
         }
     }
 }

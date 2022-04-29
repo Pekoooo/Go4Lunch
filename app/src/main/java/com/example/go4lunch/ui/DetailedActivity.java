@@ -1,38 +1,27 @@
 package com.example.go4lunch.ui;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import android.os.Bundle;
+import android.util.Log;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
-import android.content.Context;
-import android.os.Bundle;
-import android.util.AttributeSet;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.R;
-import com.example.go4lunch.model.AppModel.Coworker;
-import com.example.go4lunch.model.AppModel.Restaurant;
+import com.example.go4lunch.databinding.ActivityDetailedBinding;
+import com.example.go4lunch.model.AppModel.User;
 import com.example.go4lunch.model.GooglePlacesModel.PlaceModel;
+import com.example.go4lunch.usecase.GetCurrentUserFromDBUseCase;
 import com.example.go4lunch.viewmodel.ViewModelDetailedView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class DetailedActivity extends AppCompatActivity {
 
     private static final String TAG = "MyDetailedActivity";
-    private List<Coworker> coworkerList = new ArrayList<>();
+    private User currentUser;
     private PlaceModel placeDetailResult;
+    private ActivityDetailedBinding binding;
+    private ViewModelDetailedView viewModel;
 
 
     @Override
@@ -40,51 +29,121 @@ public class DetailedActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate: is called");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailed);
+        binding = ActivityDetailedBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        ViewModelDetailedView viewModel = new ViewModelProvider(this).get(ViewModelDetailedView.class);
+        viewModel = new ViewModelProvider(this).get(ViewModelDetailedView.class);
 
-        if(getIntent().hasExtra("placeDetails")){
-            Log.d(TAG, "onCreate: receiving place id from list fragment");
-            String placeId  = getIntent().getStringExtra("placeDetails");
-
+        if (getIntent().hasExtra("placeDetails")) {
+            String placeId = getIntent().getStringExtra("placeDetails");
             viewModel.searchPlaceDetail(placeId);
-
             viewModel.getPlaceDetails().observe(this, placeDetailResponseModel -> {
-
-                Log.d(TAG, "onChanged: place detail displayed");
                 placeDetailResult = placeDetailResponseModel.getResult();
-
-                Log.d(TAG, "onCreate: " + placeDetailResult.getWebsite());
-                setDetails();
-
+                getUserData();
             });
         }
+    }
+
+    private void getUserData() {
+
+        viewModel.getUserData().addOnSuccessListener(user -> {
+            currentUser = new User(
+                    user.getUid(),
+                    user.getUserName(),
+                    user.getAvatarURL(),
+                    user.getEmail()
+            );
+
+            currentUser.setRestaurantChoiceId(user.getRestaurantChoiceId());
+
+            setDetails();
+            setButtonLogic();
+
+        });
+
+    }
+
+    public void setButtonLogic() {
+        setButtons();
+        //TODO TURN IF STATEMENT INTO TERNARY CONDITION
+        binding.restaurantDetailedFavouriteFAB.setOnClickListener(v -> {
+
+            if (getCurrentUser().getRestaurantChoiceId() == null) {
+                //NO CHOICE MADE BY USER ? CLICK = SELECT CURRENT RESTAURANT
+                viewModel.updateUserRestaurantChoice(placeDetailResult.getPlaceId(), getCurrentUser());
+                animateChecked();
+
+            } else if (getCurrentUser().getRestaurantChoiceId() != null) {
+                //USER MADE CHOICE ?
+                //YES →
+                if (getCurrentUser().getRestaurantChoiceId().equals(placeDetailResult.getPlaceId())) {
+                    // IS IT THE SAME ONE THAT WE ARE WATCHING ?
+                    // YES ? →
+                    viewModel.updateUserRestaurantChoice(null, getCurrentUser());
+                    animateUnchecked();
 
 
+                } else if (!getCurrentUser().getRestaurantChoiceId().equals(placeDetailResult.getPlaceId())) {
+                    //NO ? →
+                    Log.d(TAG, "onClick: Choice not null and choice is not the current restaurant, replacing old choice with new choice");
+                    viewModel.updateUserRestaurantChoice(placeDetailResult.getPlaceId(), getCurrentUser());
+                    animateChecked();
+
+                }
+            }
+        });
     }
 
 
 
+    private void setButtons() {
+        //TODO TURN IF STATEMENT INTO TERNARY CONDITION
+        if (getCurrentUser().getRestaurantChoiceId() == null || !getCurrentUser().getRestaurantChoiceId().equals(placeDetailResult.getPlaceId())) {
+            binding.restaurantDetailedFavouriteFAB.setImageResource(R.drawable.ic_baseline_check_circle_outline_24);
+
+
+        } else if (getCurrentUser().getRestaurantChoiceId().equals(placeDetailResult.getPlaceId())) {
+            binding.restaurantDetailedFavouriteFAB.setImageResource(R.drawable.ic_check_circle);
+        }
+    }
+
+    public User getCurrentUser() {
+        GetCurrentUserFromDBUseCase.invoke().addOnCompleteListener(task -> currentUser = task.getResult());
+        return currentUser;
+    }
+
     private void setDetails() {
 
-        TextView restaurantName = findViewById(R.id.cardview_restaurant_name);
-        TextView restaurantAddress = findViewById(R.id.cardview_restaurant_address);
-        ImageView restaurantImage = findViewById(R.id.restaurant_detailed_image_view);
-        FloatingActionButton restaurantFavButton = findViewById(R.id.restaurant_detailed_favourite_FAB);
-
-        restaurantName.setText(placeDetailResult.getName());
-        restaurantAddress.setText(placeDetailResult.getVicinity());
+        binding.cardviewRestaurantName.setText(placeDetailResult.getName());
+        binding.cardviewRestaurantAddress.setText(placeDetailResult.getVicinity());
 
         String PlacePhotoApiCall = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference="
                 + placeDetailResult.getPhotos().get(0).getPhotoReference()
-                +"&key="
+                + "&key="
                 + BuildConfig.API_KEY;
 
         Log.d(TAG, "setDetails: photo :" + PlacePhotoApiCall);
 
-        Glide.with(restaurantImage.getContext())
+        Glide.with(binding.restaurantDetailedImageView.getContext())
                 .load(PlacePhotoApiCall)
-                .into(restaurantImage);
+                .into(binding.restaurantDetailedImageView);
+    }
 
+
+    /**
+     * ROTATION ANIMATION OF DETAILED VIEW FLOATING ACTION BUTTON.
+     */
+    private void animateChecked() {
+        binding.restaurantDetailedFavouriteFAB.animate()
+                .rotationBy(360)
+                .setDuration(250)
+                .withEndAction(() -> binding.restaurantDetailedFavouriteFAB.setImageResource(R.drawable.ic_check_circle));
+    }
+
+    private void animateUnchecked() {
+        binding.restaurantDetailedFavouriteFAB.animate()
+                .rotationBy(360)
+                .setDuration(250)
+                .withEndAction(() -> binding.restaurantDetailedFavouriteFAB.setImageResource(R.drawable.ic_baseline_check_circle_outline_24));
     }
 }
