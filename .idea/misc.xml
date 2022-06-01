@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/drawable/divider.xml" value="0.2515" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/drawable/ic_baseline_check_circle_outline_24.xml" value="0.355" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/drawable/ic_baseline_star_24.xml" value="0.2755" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/drawable/ic_check_circle.xml" value="0.17" />
@@ -13,14 +14,17 @@
         <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/drawable/ic_restaurant_menu.xml" value="0.1675" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/drawable/ic_settings.xml" value="0.222" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/drawable/ic_soup_kitchen.xml" value="0.1675" />
+        <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/drawable/ic_star.xml" value="0.2475" />
+        <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/drawable/ic_star_border.xml" value="0.2475" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/drawable/ic_view_list.xml" value="0.185" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/activity_auth.xml" value="0.33" />
-        <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/activity_detailed.xml" value="0.33" />
+        <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/activity_detailed.xml" value="0.5550061804697157" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/activity_log_in.xml" value="0.5" />
-        <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/activity_main.xml" value="0.33" />
+        <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/activity_settings.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/activity_your_lunch.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/coworker_joining_list_row.xml" value="0.35260416666666666" />
+        <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/coworker_list_row.xml" value="0.36367753623188404" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/fragment_blank.xml" value="0.18802083333333333" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/fragment_coworkers.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/fragment_list.xml" value="0.36666666666666664" />
@@ -30,10 +34,12 @@
         <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/fragment_your_lunch.xml" value="0.33" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/nav_header.xml" value="0.33" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/nav_header22.xml" value="0.17831813576494426" />
-        <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/restaurant_list_row.xml" value="1.25" />
+        <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/restaurant_list_row.xml" value="0.5" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/menu-v26/drawer_menu.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/menu/bottom_menu.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/menu/drawer_menu.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/admin/AndroidStudioProjects/Go4Lunch/app/src/main/res/menu/toolbar_menu.xml" value="0.28125" />
+        <entry key="..\:/Users/admin/AppData/Local/Android/Sdk/platforms/android-31/data/res/drawable/ratingbar_full.xml" value="0.156" />
       </map>
     </option>
   </component>

@@ -1,6 +1,7 @@
 package com.example.go4lunch.viewmodel;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -10,7 +11,8 @@ import com.example.go4lunch.model.AppModel.User;
 import com.example.go4lunch.model.GooglePlacesModel.PlaceDetailResponseModel;
 import com.example.go4lunch.utils.RestaurantRepository;
 import com.example.go4lunch.utils.UserRepository;
-import com.google.android.gms.tasks.Task;
+
+import java.util.List;
 
 public class ViewModelDetailedView extends AndroidViewModel {
 
@@ -24,21 +26,32 @@ public class ViewModelDetailedView extends AndroidViewModel {
         userRepository = UserRepository.getInstance();
     }
 
-    public void searchPlaceDetail(String placeId){
+    public void searchPlaceDetail(String placeId) {
         restaurantRepository.searchPlaceDetail(placeId);
     }
 
-    public MutableLiveData<PlaceDetailResponseModel> getPlaceDetails(){
+    public MutableLiveData<PlaceDetailResponseModel> getPlaceDetails() {
         return restaurantRepository.getPlaceDetails();
     }
 
-    public Task<User> getUserData() {
-        // Get the user from Firestore and cast it to a User model Object
-        //Continue with transforms the document snapshot to the desired object type
-        return userRepository.getUserData().continueWith(task -> task.getResult().toObject(User.class));
+    public void updateUserRestaurantChoice(String placeId, String restaurantName, User currentUser) {
+        userRepository.updateUserRestaurantChoice(placeId, restaurantName, currentUser);
     }
 
-    public void updateUserRestaurantChoice(String placeId, User currentUser) {
-        userRepository.updateUserRestaurantChoice(placeId, currentUser);
+    public MutableLiveData<List<User>> getCoworkers() {
+        return userRepository.getCoworkersComing();
+    }
+
+    public void fetchCoworkersComing(String placeId) {
+        Log.d(TAG, "fetchCoworkersComing: is called");
+        userRepository.fetchCoworkersComing(placeId);
+    }
+
+    public void addFavouritePlace(String placeId, User currentUser) {
+        userRepository.addFavouritePlace(placeId, currentUser);
+    }
+
+    public void removeFavouritePlace(String placeId, User currentUser) {
+        userRepository.removeFavouritePlace(placeId, currentUser);
     }
 }

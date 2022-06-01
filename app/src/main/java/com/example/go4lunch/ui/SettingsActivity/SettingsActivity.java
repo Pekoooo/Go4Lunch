@@ -1,4 +1,4 @@
-package com.example.go4lunch.ui;
+package com.example.go4lunch.ui.SettingsActivity;
 
 import androidx.appcompat.app.AppCompatActivity;
 

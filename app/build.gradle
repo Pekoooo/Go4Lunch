@@ -86,6 +86,10 @@ dependencies {
 
     //GLIDE
     implementation 'com.github.bumptech.glide:glide:4.12.0'
+
+    //AUTOCOMPLETE SDK
+    implementation 'com.google.android.libraries.places:places:2.6.0'
+    
 }
 
 apply plugin: 'com.google.gms.google-services'

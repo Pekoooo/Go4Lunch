@@ -15,7 +15,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Go4Lunch">
         <activity
-            android:name=".ui.DetailedActivity"
+            android:name=".ui.DetailedView.DetailedActivity"
+            android:parentActivityName=".ui.MainActivity"
             android:exported="false" />
 
         <meta-data
@@ -26,7 +27,7 @@
             android:value="AIzaSyC5E0-h6-w_g6ukteyGytTDTgqj5Pm5jsI" />
 
         <activity
-            android:name=".ui.SettingsActivity"
+            android:name=".ui.SettingsActivity.SettingsActivity"
             android:exported="false"
             android:parentActivityName=".ui.MainActivity" />
         <activity

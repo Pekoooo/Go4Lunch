@@ -3,6 +3,9 @@ package com.example.go4lunch.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,6 +17,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
@@ -26,12 +30,15 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.go4lunch.R;
 import com.example.go4lunch.databinding.ActivityMainBinding;
 import com.example.go4lunch.model.AppModel.User;
+import com.example.go4lunch.ui.DetailedView.DetailedActivity;
+import com.example.go4lunch.ui.SettingsActivity.SettingsActivity;
 import com.example.go4lunch.usecase.GetCurrentUserFromDBUseCase;
 import com.example.go4lunch.viewmodel.ViewModelUser;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -55,12 +62,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavController navController;
     private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
             new FirebaseAuthUIActivityResultContract(),
-            new ActivityResultCallback<FirebaseAuthUIAuthenticationResult>() {
-                @Override
-                public void onActivityResult(FirebaseAuthUIAuthenticationResult result) {
-                    onSignInResult(result);
-                }
-            });
+            this::onSignInResult);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,12 +79,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startSignInActivity(signInLauncher);
         } else {
             getCurrentUserData();
-
         }
     }
 
     public void initViewModel() {
-       viewModelUser = new ViewModelProvider(this).get(ViewModelUser.class);
+        viewModelUser = new ViewModelProvider(this).get(ViewModelUser.class);
     }
 
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
@@ -124,9 +125,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void getCurrentUserData() {
         GetCurrentUserFromDBUseCase.invoke().addOnSuccessListener(user -> {
-            drawerUserName     = MainActivity.this.findViewById(R.id.drawer_profile_name);
-            drawerUserEmail    = MainActivity.this.findViewById(R.id.drawer_profile_email);
-            drawerUserPicture  = MainActivity.this.findViewById(R.id.drawer_profile_picture);
+            drawerUserName = MainActivity.this.findViewById(R.id.drawer_profile_name);
+            drawerUserEmail = MainActivity.this.findViewById(R.id.drawer_profile_email);
+            drawerUserPicture = MainActivity.this.findViewById(R.id.drawer_profile_picture);
 
             currentUser = user;
             if (user != null) {
@@ -149,9 +150,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void bindViewHeader() {
         View parentView = binding.navView.getHeaderView(0);
 
-        drawerUserName     = parentView.findViewById(R.id.drawer_profile_name);
-        drawerUserEmail    = parentView.findViewById(R.id.drawer_profile_email);
-        drawerUserPicture  = parentView.findViewById(R.id.drawer_profile_picture);
+        drawerUserName = parentView.findViewById(R.id.drawer_profile_name);
+        drawerUserEmail = parentView.findViewById(R.id.drawer_profile_email);
+        drawerUserPicture = parentView.findViewById(R.id.drawer_profile_picture);
     }
 
     private void initUi() {
@@ -170,9 +171,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
     }
 
-
-
-
     private void setNavController() {
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             switch (destination.getId()) {
@@ -184,11 +182,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 case R.id.listFragment: {
                     binding.toolbar.setVisibility(View.VISIBLE);
                     binding.toolbar.setTitle(R.string.Restaurants_around);
+                    Menu toolbarMenu = binding.toolbar.getMenu();
+                    toolbarMenu.clear();
                     break;
                 }
                 case R.id.coworkersFragment: {
                     binding.toolbar.setVisibility(View.VISIBLE);
-                    binding.toolbar.setTitle(R.string.Coworkers_coming);
+                    binding.toolbar.setTitle(R.string.Available_workmates);
                     break;
                 }
 
@@ -205,9 +205,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_your_lunch:
-
-
-
+                if (currentUser.getRestaurantChoiceId() != null) {
+                    Intent intent = new Intent(this, DetailedActivity.class);
+                    intent.putExtra("placeDetails", currentUser.getRestaurantChoiceId());
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(this, "You haven't made a choice yet !", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.nav_settings:
                 Intent intent2 = new Intent(MainActivity.this, SettingsActivity.class);
@@ -225,7 +229,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startSignInActivity(signInLauncher);
     }
 
-
     @Override
     public void onBackPressed() {
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -235,8 +238,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-
-
-
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (currentUser.getUserName() != null) {
+            getCurrentUserData();
+        }
+    }
 }

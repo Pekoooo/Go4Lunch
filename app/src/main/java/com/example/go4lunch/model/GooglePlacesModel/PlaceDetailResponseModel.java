@@ -28,10 +28,6 @@ public class PlaceDetailResponseModel {
         return result;
     }
 
-    public void setResults(List<PlaceModel> results) {
-        this.result = result;
-    }
-
     public String getStatus() {
         return status;
     }

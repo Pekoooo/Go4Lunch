@@ -29,9 +29,18 @@
     <string name="Im_hungry">I\'m Hungry!</string>
     <string name="Coworkers_coming">Coworkers coming</string>
     <string name="Restaurants_around">Restaurants around</string>
-
+    <string name="Available_workmates">Available workmates</string>
     <string name="twitter_consumer_key" translatable="false"> dInTkcy3iv2HkHcPrvhh1O14w </string>
     <string name="twitter_consumer_secret" translatable="false"> HcEVUfeMZtHaN1MPj6R63ImIjV5VMBLqodck2pO7tWLJ4ONOcC </string>
+    <string name="scarlett_is_eating_at_pop_s_chicken_s">Scarlett is eating at POP\'S CHICKEN\'S</string>
+    <string name="dummy_layout_distance">500</string>
+    <string name="dummy_restaurant_name">L\'OPEN BAR</string>
+    <string name="dummy_restaurant_address">French - 12 rue du Faubourg Poissonnière</string>
+    <string name="dummy_open_text">Open until 7pm</string>
+    <string name="_8">(8)</string>
+    <string name="dummy_long_restaurant_name">LeZincLeZincLeZincLeZincLeZinc</string>
+    <string name="no_phone_number">no phone number</string>
+    <string name="search">search</string>
 
 </resources>
 

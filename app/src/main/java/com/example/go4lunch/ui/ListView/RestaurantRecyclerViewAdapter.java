@@ -1,24 +1,24 @@
-package com.example.go4lunch.ui;
+package com.example.go4lunch.ui.ListView;
 
 import static android.graphics.Color.RED;
 
-import android.graphics.Color;
 import android.location.Location;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.R;
 import com.example.go4lunch.model.GooglePlacesModel.PlaceModel;
 
@@ -35,7 +35,6 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         void onItemClick(int position);
     }
 
-
     public RestaurantRecyclerViewAdapter(List<PlaceModel> placeModels, Location currentLocation, OnItemClickListener onItemClickListener) {
         Log.d(TAG, "RestaurantRecyclerViewAdapter: constructor is being called");
         this.place = placeModels;
@@ -45,27 +44,33 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
 
     @NonNull
     @Override
-    public RestaurantRecyclerViewAdapter.RestaurantResultHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RestaurantResultHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.restaurant_list_row, parent, false);
 
-        return new RestaurantRecyclerViewAdapter.RestaurantResultHolder(itemView, onItemClickListener);
+        return new RestaurantResultHolder(itemView, onItemClickListener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RestaurantRecyclerViewAdapter.RestaurantResultHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RestaurantResultHolder holder, int position) {
 
         //Gets the current restaurant
         PlaceModel currentPlaceModel = place.get(position);
-        String PlacePhotoApiCall = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference="
-                + currentPlaceModel.getPhotos().get(0).getPhotoReference()
-                + "&key=AIzaSyDwt4HaFs_pyttzXrf9lEZF5IMgyDkVcN4";
+        String placePhotoApiCall;
+        if (currentPlaceModel.getPhotos() != null) {
 
+            placePhotoApiCall = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=100&photo_reference="
+                    + currentPlaceModel.getPhotos().get(0).getPhotoReference()
+                    + "&key=" + BuildConfig.API_KEY;
+
+        } else {
+            placePhotoApiCall = "https://media.istockphoto.com/photos/variety-food-on-a-table-cloth-restaurant-directly-above-picture-id1235685137?k=20&m=1235685137&s=612x612&w=0&h=ddicngEKM9UbIKflROe3tMj7DnC8VVT6F_m_jct2afs=";
+        }
 
 
         //Gets the current restaurant's lat lng
-        double currentRestaurantLatitude  =  currentPlaceModel.getGeometry().getLocation().getLat();
-        double currentRestaurantLongitude =  currentPlaceModel.getGeometry().getLocation().getLng();
+        double currentRestaurantLatitude = currentPlaceModel.getGeometry().getLocation().getLat();
+        double currentRestaurantLongitude = currentPlaceModel.getGeometry().getLocation().getLng();
 
         //Creates a Location with current restaurant's lat lnt
         Location currentRestaurantLocation = new Location("Current PlaceModel");
@@ -74,14 +79,23 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
 
         //Calculates the distance from the user's current location to the destination
         float distance = currentLocation.distanceTo(currentRestaurantLocation);
+        float rating;
+        String distanceToDisplay = Math.round(distance) + " m";
+        if (currentPlaceModel.getRating() != null) {
+            rating = currentPlaceModel.getRating();
+        } else {
+            rating = 3f;
+        }
 
         holder.restaurantName.setText(currentPlaceModel.getName());
         holder.restaurantInfo.setText(currentPlaceModel.getVicinity());
-        holder.restaurantStars.setText(String.valueOf(currentPlaceModel.getRating()));
-        holder.restaurantDistance.setText(Math.round(distance) + "m");
+        holder.restaurantStars.setRating(rating);
+
+
+        holder.restaurantDistance.setText(distanceToDisplay);
         //holder.coworkersGoing.setText(firebase database...);
 
-        if (currentPlaceModel.getOpeningHours().getOpenNow()){
+        if (currentPlaceModel.getOpeningHours().getOpenNow()) {
             holder.openOrClosed.setText(R.string.open);
         } else {
             holder.openOrClosed.setText(R.string.close);
@@ -91,10 +105,10 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         RequestOptions requestOptions = new RequestOptions();
         requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
 
-       Glide.with(holder.restaurantImage.getContext())
-               .load(PlacePhotoApiCall)
-               .apply(requestOptions)
-               .into(holder.restaurantImage);
+        Glide.with(holder.restaurantImage.getContext())
+                .load(placePhotoApiCall)
+                .apply(requestOptions)
+                .into(holder.restaurantImage);
 
     }
 
@@ -103,36 +117,35 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         return place.size();
     }
 
-    public void setRestaurants(List<PlaceModel> placeModels){
-        Log.d(TAG, "setRestaurants: is Called");
+    public void setRestaurants(List<PlaceModel> placeModels) {
         this.place = placeModels;
         notifyDataSetChanged();
     }
 
     static class RestaurantResultHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-       private final TextView restaurantName;
-       private final TextView restaurantInfo;
-       private final TextView openOrClosed;
-       private final TextView restaurantDistance;
-       private final TextView coworkersGoing;
-       private final TextView restaurantStars;
-       private final ImageView restaurantImage;
+        private final TextView restaurantName;
+        private final TextView restaurantInfo;
+        private final TextView openOrClosed;
+        private final TextView restaurantDistance;
+        private final TextView coworkersGoing;
+        private final RatingBar restaurantStars;
+        private final ImageView restaurantImage;
 
-       OnItemClickListener onItemClickListener;
+        OnItemClickListener onItemClickListener;
 
         public RestaurantResultHolder(@NonNull View itemView, OnItemClickListener onItemClickListener) {
             super(itemView);
             itemView.setOnClickListener(this);
             this.onItemClickListener = onItemClickListener;
 
-           restaurantName     = itemView.findViewById(R.id.restaurant_name);
-           restaurantInfo     = itemView.findViewById(R.id.restaurant_info);
-           openOrClosed       = itemView.findViewById(R.id.open_text);
-           restaurantDistance = itemView.findViewById(R.id.restaurant_distance);
-           coworkersGoing     = itemView.findViewById(R.id.number_coworkers_going);
-           restaurantStars    = itemView.findViewById(R.id.restaurant_stars);
-           restaurantImage    = itemView.findViewById(R.id.restaurant_image);
+            restaurantName = itemView.findViewById(R.id.restaurant_name);
+            restaurantInfo = itemView.findViewById(R.id.restaurant_info);
+            openOrClosed = itemView.findViewById(R.id.open_text);
+            restaurantDistance = itemView.findViewById(R.id.restaurant_distance);
+            coworkersGoing = itemView.findViewById(R.id.number_coworkers_going);
+            restaurantStars = itemView.findViewById(R.id.rating_bar);
+            restaurantImage = itemView.findViewById(R.id.restaurant_image);
         }
 
         @Override

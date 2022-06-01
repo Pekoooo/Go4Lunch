@@ -15,33 +15,26 @@ import com.example.go4lunch.utils.RestaurantRepository;
 public class ViewModelRestaurant extends AndroidViewModel {
 
     private static final String TAG = "MyViewModelRestaurant";
-    private RestaurantRepository restaurantRepository;
-    private MutableLiveData<NearbyResponseModel> listOfRestaurants;
+    private final RestaurantRepository restaurantRepository;
+    private final MutableLiveData<NearbyResponseModel> listOfRestaurants;
     public MutableLiveData<Location> location = new MutableLiveData<>();
-
 
     public ViewModelRestaurant(@NonNull Application application) {
         super(application);
         restaurantRepository = RestaurantRepository.getInstance();
-
-    }
-
-    public void init() {
-        restaurantRepository = new RestaurantRepository();
         listOfRestaurants = restaurantRepository.getListOfRestaurants();
+
     }
 
-    public void sendLocation(Location location){
-         this.location.postValue(location);
+    public void sendLocation(Location location) {
+        this.location.postValue(location);
     }
-
 
     public void searchRestaurants(String latlng) {
         restaurantRepository.searchRestaurants(latlng);
     }
 
-
-    public MutableLiveData<NearbyResponseModel> getListOfRestaurants(){
+    public MutableLiveData<NearbyResponseModel> getListOfRestaurants() {
         return listOfRestaurants;
     }
 

@@ -42,7 +42,7 @@ public class PlaceModel implements Parcelable {
 
     @SerializedName("rating")
     @Expose
-    private Double rating;
+    private Float rating;
 
     @SerializedName("reference")
     @Expose
@@ -88,7 +88,7 @@ public class PlaceModel implements Parcelable {
         if (in.readByte() == 0) {
             rating = null;
         } else {
-            rating = in.readDouble();
+            rating = in.readFloat();
         }
         reference = in.readString();
         scope = in.readString();
@@ -218,11 +218,11 @@ public class PlaceModel implements Parcelable {
     }
 
 
-    public Double getRating() {
+    public Float getRating() {
         return rating;
     }
 
-    public void setRating(Double rating) {
+    public void setRating(float rating) {
         this.rating = rating;
     }
 

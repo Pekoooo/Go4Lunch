@@ -1,109 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/restaurant_row_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="16dp"
-    android:id="@+id/restaurant_row_layout">
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/restaurant_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="L'OPEN BAR"
-        android:textStyle="bold"
-        android:gravity="center_vertical"
-        android:paddingBottom="5dp"
         android:maxLines="2"
+        android:text="@string/dummy_restaurant_name"
         android:textSize="15sp"
-        app:layout_constraintTop_toTopOf="parent"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_margin="8dp"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/restaurant_info"
-        android:layout_width="230dp"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.4"
-        android:text="French - 12 rue du Faubourg Poissonnière"
-        android:gravity="center_vertical"
         android:maxLines="2"
-        android:paddingBottom="5dp"
+        android:text="@string/dummy_restaurant_address"
         android:textSize="14sp"
-        app:layout_constraintTop_toBottomOf="@id/restaurant_name"
+        app:layout_constraintBottom_toTopOf="@id/open_text"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_margin="8dp"/>
+        app:layout_constraintTop_toBottomOf="@id/restaurant_name" />
 
     <TextView
         android:id="@+id/open_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="0.3"
-        android:text="Open until 7pm"
-        android:gravity="center_vertical"
         android:maxLines="2"
-        android:textSize="10sp"
-        app:layout_constraintTop_toBottomOf="@+id/restaurant_info"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_margin="8dp"/>
+        android:text="@string/dummy_open_text"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/restaurant_image"
         android:layout_width="75dp"
         android:layout_height="75dp"
         android:src="@mipmap/ic_launcher_round"
-
-        app:layout_constraintBottom_toBottomOf="@+id/restaurant_stars_image"
-
+        app:layout_constraintBottom_toBottomOf="@id/open_text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/restaurant_distance" />
+        app:layout_constraintTop_toTopOf="@id/restaurant_name" />
 
     <TextView
         android:id="@+id/restaurant_distance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="4dp"
-        android:text="500"
+        android:layout_marginEnd="8dp"
+        android:text="@string/dummy_layout_distance"
         app:layout_constraintEnd_toStartOf="@id/restaurant_image"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/restaurant_image" />
 
 
     <TextView
         android:id="@+id/number_coworkers_going"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="(8)"
-        app:layout_constraintTop_toBottomOf="@id/restaurant_distance"
-        app:layout_constraintEnd_toStartOf="@+id/restaurant_image"
-        android:layout_margin="8dp"/>
+        android:layout_marginEnd="8dp"
+        android:text="@string/_8"
+        app:layout_constraintBottom_toBottomOf="@id/restaurant_image"
+        app:layout_constraintEnd_toStartOf="@id/restaurant_image"
+        app:layout_constraintTop_toTopOf="@id/restaurant_image" />
 
-    <TextView
-        android:id="@+id/restaurant_stars"
+    <RatingBar
+        android:id="@+id/rating_bar"
+        style="@style/Widget.AppCompat.RatingBar.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:layout_weight="0.3"
-        android:maxLines="1"
-        android:text="3.5"
-        app:layout_constraintStart_toEndOf="@+id/restaurant_info"
-        app:layout_constraintTop_toBottomOf="@id/number_coworkers_going" />
-
-    <ImageView
-        android:id="@+id/restaurant_stars_image"
-        android:layout_width="16dp"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_baseline_star_24"
-
-
-        app:layout_constraintBottom_toBottomOf="parent"
-
-        app:layout_constraintEnd_toStartOf="@+id/restaurant_image"
-        app:layout_constraintHorizontal_bias="0.09"
-        app:layout_constraintStart_toEndOf="@+id/restaurant_stars"
-        app:layout_constraintTop_toBottomOf="@+id/number_coworkers_going"
-        app:layout_constraintVertical_bias="0.12" />
+        android:layout_marginEnd="8dp"
+        android:progressTint="#FFD700"
+        android:rating="3"
+        app:layout_constraintBottom_toBottomOf="@id/restaurant_image"
+        app:layout_constraintEnd_toStartOf="@id/restaurant_image" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

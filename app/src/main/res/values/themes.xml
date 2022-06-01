@@ -21,6 +21,11 @@
 
     </style>
 
+    <!-- RATING BAR COLOR -->
+    <style name="AppThemeRatingBar" parent="Theme.AppCompat">
+        <item name="colorAccent">#eff700</item>
+    </style>
+
     <!-- STYLE SIGN-IN ACTIVITY -->
     <style name="LoginTheme" parent="Theme.Go4Lunch">
         <item name="colorPrimary">@color/colorPrimary</item>
