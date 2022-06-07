@@ -2,7 +2,6 @@ package com.example.go4lunch.ui.ListView;
 
 import static android.graphics.Color.RED;
 
-import android.location.Location;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,14 +19,13 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.R;
-import com.example.go4lunch.model.GooglePlacesModel.PlaceModel;
+import com.example.go4lunch.model.AppModel.Restaurant;
 
 import java.util.List;
 
 public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<RestaurantRecyclerViewAdapter.RestaurantResultHolder> {
 
-    private List<PlaceModel> place;
-    private final Location currentLocation;
+    private List<Restaurant> place;
     private static final String TAG = "MyRestoRecyclerView";
     private final OnItemClickListener onItemClickListener;
 
@@ -35,10 +33,7 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         void onItemClick(int position);
     }
 
-    public RestaurantRecyclerViewAdapter(List<PlaceModel> placeModels, Location currentLocation, OnItemClickListener onItemClickListener) {
-        Log.d(TAG, "RestaurantRecyclerViewAdapter: constructor is being called");
-        this.place = placeModels;
-        this.currentLocation = currentLocation;
+    public RestaurantRecyclerViewAdapter(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -54,62 +49,37 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
     @Override
     public void onBindViewHolder(@NonNull RestaurantResultHolder holder, int position) {
 
-        //Gets the current restaurant
-        PlaceModel currentPlaceModel = place.get(position);
+        Restaurant currentRestaurant = place.get(position);
+        String distanceToDisplay = Math.round(currentRestaurant.getDistance()) + " m";
+
         String placePhotoApiCall;
-        if (currentPlaceModel.getPhotos() != null) {
-
-            placePhotoApiCall = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=100&photo_reference="
-                    + currentPlaceModel.getPhotos().get(0).getPhotoReference()
-                    + "&key=" + BuildConfig.API_KEY;
-
-        } else {
+        if(currentRestaurant.getPhotoReference() == null){
             placePhotoApiCall = "https://media.istockphoto.com/photos/variety-food-on-a-table-cloth-restaurant-directly-above-picture-id1235685137?k=20&m=1235685137&s=612x612&w=0&h=ddicngEKM9UbIKflROe3tMj7DnC8VVT6F_m_jct2afs=";
-        }
-
-
-        //Gets the current restaurant's lat lng
-        double currentRestaurantLatitude = currentPlaceModel.getGeometry().getLocation().getLat();
-        double currentRestaurantLongitude = currentPlaceModel.getGeometry().getLocation().getLng();
-
-        //Creates a Location with current restaurant's lat lnt
-        Location currentRestaurantLocation = new Location("Current PlaceModel");
-        currentRestaurantLocation.setLatitude(currentRestaurantLatitude);
-        currentRestaurantLocation.setLongitude(currentRestaurantLongitude);
-
-        //Calculates the distance from the user's current location to the destination
-        float distance = currentLocation.distanceTo(currentRestaurantLocation);
-        float rating;
-        String distanceToDisplay = Math.round(distance) + " m";
-        if (currentPlaceModel.getRating() != null) {
-            rating = currentPlaceModel.getRating();
         } else {
-            rating = 3f;
+            placePhotoApiCall = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=100&photo_reference="
+                    + currentRestaurant.getPhotoReference()
+                    + "&key=" + BuildConfig.API_KEY;
         }
 
-        holder.restaurantName.setText(currentPlaceModel.getName());
-        holder.restaurantInfo.setText(currentPlaceModel.getVicinity());
-        holder.restaurantStars.setRating(rating);
-
-
+        holder.restaurantName.setText(currentRestaurant.getName());
+        holder.restaurantInfo.setText(currentRestaurant.getAddress());
+        holder.restaurantStars.setRating(currentRestaurant.getRating());
         holder.restaurantDistance.setText(distanceToDisplay);
         //holder.coworkersGoing.setText(firebase database...);
 
-        if (currentPlaceModel.getOpeningHours().getOpenNow()) {
-            holder.openOrClosed.setText(R.string.open);
-        } else {
-            holder.openOrClosed.setText(R.string.close);
-            holder.openOrClosed.setTextColor(RED);
-        }
+        if(currentRestaurant.isOpen()){
+                holder.openOrClosed.setText(R.string.open);
+            } else if(!currentRestaurant.isOpen()) {
+                holder.openOrClosed.setText(R.string.close);
+                holder.openOrClosed.setTextColor(RED);
+            }
 
         RequestOptions requestOptions = new RequestOptions();
         requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
-
         Glide.with(holder.restaurantImage.getContext())
                 .load(placePhotoApiCall)
                 .apply(requestOptions)
                 .into(holder.restaurantImage);
-
     }
 
     @Override
@@ -117,7 +87,7 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         return place.size();
     }
 
-    public void setRestaurants(List<PlaceModel> placeModels) {
+    public void setRestaurants(List<Restaurant> placeModels) {
         this.place = placeModels;
         notifyDataSetChanged();
     }

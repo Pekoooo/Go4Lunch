@@ -1,5 +1,6 @@
 package com.example.go4lunch.ui.CoworkerView;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,11 +31,17 @@ public class CoworkersFragment extends Fragment {
     private FragmentCoworkersBinding binding;
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        Log.d(TAG, "onAttach: is called");
+        super.onAttach(context);
+        viewModel = new ViewModelProvider(this).get(ViewModelCoworkerList.class);
+
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new ViewModelProvider(this).get(ViewModelCoworkerList.class);
         setHasOptionsMenu(false);
-
     }
 
     @Override
@@ -46,7 +54,7 @@ public class CoworkersFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel.fetchAllCoworkers();
+
         viewModel.getAllCoworkers().observe(getViewLifecycleOwner(), this::setRecyclerView);
     }
 

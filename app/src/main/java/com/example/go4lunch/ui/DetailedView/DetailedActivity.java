@@ -51,6 +51,7 @@ public class DetailedActivity extends AppCompatActivity {
                 getUserData();
             });
 
+
             viewModel.getCoworkers().observe(this, this::setRecyclerView);
         }
 

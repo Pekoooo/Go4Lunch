@@ -26,6 +26,11 @@
     <string name="se_connecter_avec_twitter">Se connecter avec Twitter</string>
     <string name="se_connecter_avec_google">Se connecter avec Google</string>
 
+    <string name="facebook_application_id">542041044129231</string>
+    <string name="fb_login_protocol_scheme">fb1234</string>
+    <string name="facebook_client_token">dbe3329572b502c94efac75eb3697b75</string>
+
+
     <string name="Im_hungry">I\'m Hungry!</string>
     <string name="Coworkers_coming">Coworkers coming</string>
     <string name="Restaurants_around">Restaurants around</string>
@@ -41,6 +46,8 @@
     <string name="dummy_long_restaurant_name">LeZincLeZincLeZincLeZincLeZinc</string>
     <string name="no_phone_number">no phone number</string>
     <string name="search">search</string>
+    <string name="no_email">No email</string>
+    <string name="default_photo_ref">https://media.istockphoto.com/photos/variety-food-on-a-table-cloth-restaurant-directly-above-picture-id1235685137?k=20&amp;m=1235685137&amp;s=612x612&amp;w=0&amp;h=ddicngEKM9UbIKflROe3tMj7DnC8VVT6F_m_jct2afs=</string>
 
 </resources>
 

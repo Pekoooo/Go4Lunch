@@ -1,4 +1,4 @@
-package com.example.go4lunch.utils;
+package com.example.go4lunch.repositories;
 
 import android.util.Log;
 
@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.go4lunch.model.AppModel.User;
 import com.example.go4lunch.usecase.GetCurrentUserFromAuthUseCase;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
@@ -40,7 +39,6 @@ public class UserRepository {
     }
 
     private CollectionReference getUsersCollection() {
-
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
     }
 
@@ -49,7 +47,6 @@ public class UserRepository {
         String uid = this.getCurrentUserUID();
         if (uid != null) {
             return this.getUsersCollection().document(uid).get();
-
         } else {
             return null;
         }
@@ -60,23 +57,19 @@ public class UserRepository {
         getUsersCollection()
                 .whereEqualTo("restaurantChoiceId", placeId)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            List<User> currentCoworkers = new ArrayList<>();
-                            for (QueryDocumentSnapshot documents : task.getResult()) {
-                                currentCoworkers.add(documents.toObject(User.class));
-                                Log.d(TAG, "onComplete: adding: " + documents.toObject(User.class).getUserName() + " to the list");
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<User> currentCoworkers = new ArrayList<>();
+                        for (QueryDocumentSnapshot documents : task.getResult()) {
+                            currentCoworkers.add(documents.toObject(User.class));
+                            Log.d(TAG, "onComplete: adding: " + documents.toObject(User.class).getUserName() + " to the list");
 
-                            }
-
-                            coworkersComing.postValue(currentCoworkers);
-
-                        } else {
-                            Log.d(TAG, "onComplete: error getting documents" + task.getException());
                         }
 
+                        coworkersComing.postValue(currentCoworkers);
+
+                    } else {
+                        Log.d(TAG, "onComplete: error getting documents" + task.getException());
                     }
                 });
     }
@@ -147,7 +140,6 @@ public class UserRepository {
         currentUser.setRestaurantChoiceId(placeId);
         currentUser.setRestaurantChoiceName(restaurantName);
         this.getUsersCollection().document(currentUser.getUid()).set(currentUser);
-
     }
 
     public void addFavouritePlace(String placeId, User currentUser) {

@@ -9,8 +9,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.go4lunch.model.AppModel.User;
 import com.example.go4lunch.model.GooglePlacesModel.PlaceDetailResponseModel;
-import com.example.go4lunch.utils.RestaurantRepository;
-import com.example.go4lunch.utils.UserRepository;
+import com.example.go4lunch.repositories.RestaurantRepository;
+import com.example.go4lunch.repositories.UserRepository;
 
 import java.util.List;
 

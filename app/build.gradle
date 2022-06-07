@@ -57,7 +57,6 @@ dependencies {
     implementation 'com.karumi:dexter:6.2.3'
 
     //FIREBASE
-    implementation platform('com.google.firebase:firebase-bom:29.2.0')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-firestore'
     implementation platform('com.google.firebase:firebase-bom:29.3.1')
@@ -66,10 +65,12 @@ dependencies {
 
     // FIREBASE UI
     implementation 'com.firebaseui:firebase-ui-auth:8.0.0'
-    implementation 'pub.devrel:easypermissions:3.0.0'
 
     //TwitterSDK
     implementation 'com.twitter.sdk.android:twitter:3.1.1'
+
+    //FacebookSDK
+    implementation 'com.facebook.android:facebook-login:latest.release'
 
     // EASYPERMISSIONS
     implementation 'pub.devrel:easypermissions:3.0.0'

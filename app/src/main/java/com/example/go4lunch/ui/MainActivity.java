@@ -27,6 +27,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.R;
 import com.example.go4lunch.databinding.ActivityMainBinding;
 import com.example.go4lunch.model.AppModel.User;
@@ -34,6 +35,10 @@ import com.example.go4lunch.ui.DetailedView.DetailedActivity;
 import com.example.go4lunch.ui.SettingsActivity.SettingsActivity;
 import com.example.go4lunch.usecase.GetCurrentUserFromDBUseCase;
 import com.example.go4lunch.viewmodel.ViewModelUser;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookSdk;
+import com.facebook.LoggingBehavior;
+import com.facebook.appevents.AppEventsLogger;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.firebase.ui.auth.IdpResponse;
@@ -80,6 +85,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             getCurrentUserData();
         }
+
+
     }
 
     public void initViewModel() {
@@ -109,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         List<AuthUI.IdpConfig> providers =
                 Arrays.asList(
                         new AuthUI.IdpConfig.GoogleBuilder().build(),
-                        //new AuthUI.IdpConfig.FacebookBuilder().build(),
+                        new AuthUI.IdpConfig.FacebookBuilder().build(),
                         new AuthUI.IdpConfig.TwitterBuilder().build());
 
         // Launch the activity
@@ -130,15 +137,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             drawerUserPicture = MainActivity.this.findViewById(R.id.drawer_profile_picture);
 
             currentUser = user;
+
             if (user != null) {
                 MainActivity.this.updateDrawerUi(user);
+
             }
+
         });
     }
 
     public void updateDrawerUi(User user) {
         drawerUserName.setText(user.getUserName());
-        drawerUserEmail.setText(user.getEmail());
+        if (user.getEmail() != null) {
+            drawerUserEmail.setText(user.getEmail());
+        } else {
+            drawerUserEmail.setText(R.string.no_email);
+        }
+
         if (user.getAvatarURL() != null) {
             Glide.with(drawerUserPicture.getContext())
                     .load(user.getAvatarURL())

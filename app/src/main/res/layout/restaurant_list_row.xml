@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/restaurant_name"
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:maxLines="2"
         android:text="@string/dummy_restaurant_name"

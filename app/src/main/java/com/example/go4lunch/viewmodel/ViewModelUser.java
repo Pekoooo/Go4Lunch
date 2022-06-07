@@ -1,14 +1,11 @@
 package com.example.go4lunch.viewmodel;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 
-import com.example.go4lunch.model.AppModel.User;
-import com.example.go4lunch.utils.UserRepository;
-import com.google.android.gms.tasks.Task;
+import com.example.go4lunch.repositories.UserRepository;
 
 import org.jetbrains.annotations.NotNull;
 
