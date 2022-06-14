@@ -1,12 +1,15 @@
 package com.example.go4lunch.ui.MapView;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 import android.Manifest;
-import android.content.Context;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,8 +22,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.go4lunch.BuildConfig;
@@ -28,12 +35,13 @@ import com.example.go4lunch.R;
 import com.example.go4lunch.databinding.FragmentMapBinding;
 import com.example.go4lunch.model.AppModel.Restaurant;
 import com.example.go4lunch.model.AppModel.User;
+import com.example.go4lunch.ui.DetailedView.DetailedActivity;
+import com.example.go4lunch.usecase.GetCurrentUserFromDBUseCase;
 import com.example.go4lunch.utils.BitmapFromVectorUtil;
 import com.example.go4lunch.utils.GetBoundsUtil;
 import com.example.go4lunch.viewmodel.SharedViewModelRestaurant;
+import com.example.go4lunch.workmanager.WorkerSendNotification;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -41,6 +49,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
@@ -53,36 +62,26 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import pub.devrel.easypermissions.AfterPermissionGranted;
-import pub.devrel.easypermissions.AppSettingsDialog;
-import pub.devrel.easypermissions.EasyPermissions;
 
-
-public class MapFragment extends Fragment implements OnMapReadyCallback, EasyPermissions.PermissionCallbacks {
+public class MapFragment extends Fragment implements OnMapReadyCallback {
     private static final String TAG = "MyMapFragment";
     private FragmentMapBinding binding;
     private static final float DEFAULT_ZOOM = 15f;
+    private static final int NOTIFICATION_ID = 1;
+    private static final String CHANNEL_ID = "notif";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 123;
     private GoogleMap gMap;
+    private User currentUser;
     private Location currentLocation;
     private List<Restaurant> restaurantList = new ArrayList<>();
     private List<User> allUsers = new ArrayList<>();
     private SharedViewModelRestaurant viewModel;
-    private final String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
     private static final int AUTOCOMPLETE_REQUEST_CODE = 1;
     private final List<Place.Field> fields = Arrays.asList(
             Place.Field.NAME,
             Place.Field.ADDRESS,
-            Place.Field.LAT_LNG);
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        Log.d(TAG, "onAttach: is called");
-        super.onAttach(context);
-        //On attach because guideline requires one call per app start
-        viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModelRestaurant.class);
-        viewModel.fetchCoworkers();
-    }
+            Place.Field.LAT_LNG,
+            Place.Field.ID);
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -119,11 +118,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, EasyPer
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        zoomOnLocation();
-        initMap();
         setButtons();
+        viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModelRestaurant.class);
+        viewModel.fetchCoworkers();
         viewModel.getAllCoworkers().observe(requireActivity(), users ->
                 allUsers = users);
+
+        viewModel.getLocation().observe(getViewLifecycleOwner(), new Observer<Location>() {
+            @Override
+            public void onChanged(Location location) {
+                currentLocation = location;
+                initMap();
+            }
+        });
 
         viewModel.getListOfRestaurants().observe(requireActivity(), restaurants -> {
             restaurantList = restaurants;
@@ -141,30 +148,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, EasyPer
                         DEFAULT_ZOOM
                 );
             }
+
         });
-    }
-
-    @AfterPermissionGranted(LOCATION_PERMISSION_REQUEST_CODE)
-    private void zoomOnLocation() {
-        if (EasyPermissions.hasPermissions(requireContext(), perms)) {
-            getDeviceLocation();
-
-        } else {
-            EasyPermissions.requestPermissions(
-                    this,
-                    getString(R.string.rationale),
-                    LOCATION_PERMISSION_REQUEST_CODE,
-                    perms);
-        }
-    }
-
-    private void getNearbyRestaurants() {
-        viewModel.searchRestaurants(currentLocation);
-        viewModel.sendLocation(currentLocation);
     }
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
+        Log.d(TAG, "onMapReady: map is ready");
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -174,6 +164,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, EasyPer
         googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
         gMap.setMyLocationEnabled(true);
         gMap.getUiSettings().setMyLocationButtonEnabled(false);
+        
+            LatLng latLng = new LatLng(
+                    viewModel.getLocation().getValue().getLatitude(),
+                    viewModel.getLocation().getValue().getLongitude());
+
+            moveCamera(latLng, DEFAULT_ZOOM);
+
+
     }
 
     private void initMap() {
@@ -185,28 +183,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, EasyPer
         }
     }
 
-    private void getDeviceLocation() {
-        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
-        try {
-            final Task<Location> location = fusedLocationProviderClient.getLastLocation();
-            location.addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    currentLocation = task.getResult();
-                    getNearbyRestaurants();
-
-                    moveCamera(new LatLng(
-                                    currentLocation.getLatitude(),
-                                    currentLocation.getLongitude()),
-                            DEFAULT_ZOOM
-                    );
-                }
-            });
-        } catch (SecurityException e) {
-            Log.d(TAG, "getDeviceLocation: SecurityException" + e.getMessage());
-        }
-    }
-
     private void moveCamera(LatLng latLng, float zoom) {
+        Log.d(TAG, "moveCamera: is called");
         gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
 
@@ -233,39 +211,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, EasyPer
     }
 
     @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-        initMap();
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-            new AppSettingsDialog.Builder(this).build().show();
-
-        } else {
-            EasyPermissions.requestPermissions(this, getString(R.string.rationale),
-                    LOCATION_PERMISSION_REQUEST_CODE, this.perms);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE) {
-            initMap();
-            zoomOnLocation();
-        }
 
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE && data != null) {
             if (resultCode == RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(data);
-                moveCamera(place.getLatLng(), 20);
+                Log.d(TAG, "onActivityResult: " + place.getId());
+
+                openDetailedActivity(place.getId());
 
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
                 Status status = Autocomplete.getStatusFromIntent(data);
@@ -275,4 +229,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, EasyPer
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+    public void openDetailedActivity(String placeId){
+        Intent intent = new Intent(requireContext(), DetailedActivity.class);
+        intent.putExtra("placeDetails", placeId);
+        startActivity(intent);
+    }
+
 }

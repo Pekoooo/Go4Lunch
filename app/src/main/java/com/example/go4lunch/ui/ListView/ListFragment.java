@@ -62,7 +62,7 @@ public class ListFragment extends Fragment implements RestaurantRecyclerViewAdap
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModelRestaurant.class);
-        currentLocation = viewModel.location.getValue();
+        currentLocation = viewModel.getLocation().getValue();
         Places.initialize(requireContext(), BuildConfig.API_KEY);
     }
 
@@ -79,14 +79,14 @@ public class ListFragment extends Fragment implements RestaurantRecyclerViewAdap
         super.onViewCreated(view, savedInstanceState);
         setRecyclerView();
         if (isAdded()){
-            viewModel.location.observe(requireActivity(), location -> {
+            viewModel.getLocation().observe(requireActivity(), location -> {
                 currentLocation = location;
             });
 
             viewModel.getListOfRestaurants().observe(requireActivity(), restaurants -> {
-                this.restaurants = restaurants;
-                adapter.setRestaurants(restaurants);
-            }
+                        this.restaurants = restaurants;
+                        adapter.setRestaurants(restaurants);
+                    }
             );
         }
     }

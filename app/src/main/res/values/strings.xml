@@ -48,6 +48,11 @@
     <string name="search">search</string>
     <string name="no_email">No email</string>
     <string name="default_photo_ref">https://media.istockphoto.com/photos/variety-food-on-a-table-cloth-restaurant-directly-above-picture-id1235685137?k=20&amp;m=1235685137&amp;s=612x612&amp;w=0&amp;h=ddicngEKM9UbIKflROe3tMj7DnC8VVT6F_m_jct2afs=</string>
+    <string name="coma">,</string>
+    <string name="and">and</string>
+    <string name="todays_lunch">Today\'s lunch !</string>
+    <string name="channel">notification channel</string>
+    <string name="channel_description">channel for 12pm notification</string>
 
 </resources>
 

@@ -20,6 +20,7 @@ import com.example.go4lunch.model.AppModel.User;
 import com.example.go4lunch.model.GooglePlacesModel.PlaceModel;
 import com.example.go4lunch.usecase.GetCurrentUserFromDBUseCase;
 import com.example.go4lunch.viewmodel.ViewModelDetailedView;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,7 @@ public class DetailedActivity extends AppCompatActivity {
             placeId = getIntent().getStringExtra("placeDetails");
             viewModel.searchPlaceDetail(placeId);
             viewModel.fetchCoworkersComing(placeId);
+
             viewModel.getPlaceDetails().observe(this, placeDetailResponseModel -> {
                 placeDetailResult = placeDetailResponseModel.getResult();
                 getUserData();
@@ -56,7 +58,7 @@ public class DetailedActivity extends AppCompatActivity {
         }
 
     }
-    
+
     private void setRecyclerView(List<User> coworkersComing) {
         binding.recyclerView.setHasFixedSize(true);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -65,18 +67,21 @@ public class DetailedActivity extends AppCompatActivity {
     }
 
     private void getUserData() {
-        GetCurrentUserFromDBUseCase.invoke().addOnSuccessListener(user -> {
-            currentUser = new User(
-                    user.getUid(),
-                    user.getUserName(),
-                    user.getAvatarURL(),
-                    user.getEmail()
-            );
+        GetCurrentUserFromDBUseCase.invoke().addOnSuccessListener(new OnSuccessListener<User>() {
+            @Override
+            public void onSuccess(User user) {
+                currentUser = new User(
+                        user.getUid(),
+                        user.getUserName(),
+                        user.getAvatarURL(),
+                        user.getEmail()
+                );
 
-            currentUser.setRestaurantChoiceId(user.getRestaurantChoiceId());
-            currentUser.setLikedRestaurants(user.getLikedRestaurants());
-            setDetails();
-            setButtonLogic();
+                currentUser.setRestaurantChoiceId(user.getRestaurantChoiceId());
+                currentUser.setLikedRestaurants(user.getLikedRestaurants());
+                DetailedActivity.this.setDetails();
+                DetailedActivity.this.setButtonLogic();
+            }
         });
     }
 
@@ -87,7 +92,7 @@ public class DetailedActivity extends AppCompatActivity {
 
             if (getCurrentUser().getRestaurantChoiceId() == null) {
                 //NO CHOICE MADE BY USER ? CLICK = SELECT CURRENT RESTAURANT
-                viewModel.updateUserRestaurantChoice(placeDetailResult.getPlaceId(), placeDetailResult.getName(), getCurrentUser());
+                viewModel.updateUserRestaurantChoice(placeDetailResult.getPlaceId(), placeDetailResult.getName(), getCurrentUser(), placeDetailResult.getVicinity());
                 viewModel.fetchCoworkersComing(placeId);
                 animateChecked();
 
@@ -98,13 +103,13 @@ public class DetailedActivity extends AppCompatActivity {
                 if (getCurrentUser().getRestaurantChoiceId().equals(placeDetailResult.getPlaceId())) {
                     // IS IT THE SAME ONE THAT WE ARE WATCHING ?
                     // YES ? →
-                    viewModel.updateUserRestaurantChoice(null, null, getCurrentUser());
+                    viewModel.updateUserRestaurantChoice(null, null, getCurrentUser(), null);
                     animateUnchecked();
 
 
                 } else if (!getCurrentUser().getRestaurantChoiceId().equals(placeDetailResult.getPlaceId())) {
                     //NO ? →
-                    viewModel.updateUserRestaurantChoice(placeDetailResult.getPlaceId(), placeDetailResult.getName(), getCurrentUser());
+                    viewModel.updateUserRestaurantChoice(placeDetailResult.getPlaceId(), placeDetailResult.getName(), getCurrentUser(), placeDetailResult.getVicinity());
                     animateChecked();
 
                 }
@@ -149,7 +154,7 @@ public class DetailedActivity extends AppCompatActivity {
         });
 
         binding.cardviewLikeButton.setOnClickListener(v -> {
-            if(!isFavourite()){
+            if (!isFavourite()) {
                 viewModel.addFavouritePlace(placeId, currentUser);
                 setLiked();
             } else {
@@ -169,12 +174,12 @@ public class DetailedActivity extends AppCompatActivity {
             setChecked();
         }
 
-       // SETS FAVOURITE ICON
-       if(isFavourite()){
-           setLiked();
-       } else {
-           setNotLiked();
-       }
+        // SETS FAVOURITE ICON
+        if (isFavourite()) {
+            setLiked();
+        } else {
+            setNotLiked();
+        }
     }
 
     private User getCurrentUser() {
@@ -211,12 +216,12 @@ public class DetailedActivity extends AppCompatActivity {
                 .into(binding.restaurantDetailedImageView);
     }
 
-    private boolean isFavourite(){
+    private boolean isFavourite() {
         boolean isFavourite = false;
-        if(!currentUser.likedRestaurants.isEmpty()){
+        if (!currentUser.likedRestaurants.isEmpty()) {
             for (int i = 0; i < currentUser.likedRestaurants.size(); i++) {
                 String restaurantNameAtPosition = currentUser.likedRestaurants.get(i);
-                if(restaurantNameAtPosition.equals(placeDetailResult.getPlaceId())){
+                if (restaurantNameAtPosition.equals(placeDetailResult.getPlaceId())) {
                     isFavourite = true;
                     break;
                 } else {
@@ -231,13 +236,13 @@ public class DetailedActivity extends AppCompatActivity {
     private void setNotLiked() {
         Log.d(TAG, "setNotLiked: changing star to empty");
         Drawable img = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_star_border);
-        binding.cardviewLikeButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, img,null,null);
+        binding.cardviewLikeButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, img, null, null);
     }
 
     private void setLiked() {
         Log.d(TAG, "setLiked: changing star to full");
         Drawable img = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_star);
-        binding.cardviewLikeButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, img,null,null);
+        binding.cardviewLikeButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, img, null, null);
     }
 
     /**
@@ -257,12 +262,12 @@ public class DetailedActivity extends AppCompatActivity {
                 .withEndAction(this::setUnchecked);
     }
 
-    private void setUnchecked(){
+    private void setUnchecked() {
         binding.restaurantDetailedFavouriteFAB.setImageResource(R.drawable.ic_baseline_check_circle_outline_24);
 
     }
 
-    private void setChecked(){
+    private void setChecked() {
         binding.restaurantDetailedFavouriteFAB.setImageResource(R.drawable.ic_check_circle);
 
     }

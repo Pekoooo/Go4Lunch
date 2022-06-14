@@ -136,9 +136,10 @@ public class UserRepository {
         return (GetCurrentUserFromAuthUseCase.invoke() != null);
     }
 
-    public void updateUserRestaurantChoice(String placeId, String restaurantName, User currentUser) {
+    public void updateUserRestaurantChoice(String placeId, String restaurantName, User currentUser, String restaurantAddress) {
         currentUser.setRestaurantChoiceId(placeId);
         currentUser.setRestaurantChoiceName(restaurantName);
+        currentUser.setRestaurantChoiceAddress(restaurantAddress);
         this.getUsersCollection().document(currentUser.getUid()).set(currentUser);
     }
 

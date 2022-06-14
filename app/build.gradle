@@ -90,6 +90,9 @@ dependencies {
 
     //AUTOCOMPLETE SDK
     implementation 'com.google.android.libraries.places:places:2.6.0'
+
+    // WORKMANAGER
+    implementation "androidx.work:work-runtime:2.7.1"
     
 }
 

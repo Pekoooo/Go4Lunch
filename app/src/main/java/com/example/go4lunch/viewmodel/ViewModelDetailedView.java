@@ -9,7 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.go4lunch.model.AppModel.User;
 import com.example.go4lunch.model.GooglePlacesModel.PlaceDetailResponseModel;
-import com.example.go4lunch.repositories.RestaurantRepository;
+import com.example.go4lunch.repositories.PlaceDetailRepository;
 import com.example.go4lunch.repositories.UserRepository;
 
 import java.util.List;
@@ -17,25 +17,25 @@ import java.util.List;
 public class ViewModelDetailedView extends AndroidViewModel {
 
     private static final String TAG = "MyDetailRestaurant";
-    private final RestaurantRepository restaurantRepository;
+    private final PlaceDetailRepository mPlaceDetailRepository;
     private final UserRepository userRepository;
 
     public ViewModelDetailedView(@NonNull Application application) {
         super(application);
-        restaurantRepository = RestaurantRepository.getInstance();
+        mPlaceDetailRepository = PlaceDetailRepository.getInstance();
         userRepository = UserRepository.getInstance();
     }
 
     public void searchPlaceDetail(String placeId) {
-        restaurantRepository.searchPlaceDetail(placeId);
+        mPlaceDetailRepository.searchPlaceDetail(placeId);
     }
 
     public MutableLiveData<PlaceDetailResponseModel> getPlaceDetails() {
-        return restaurantRepository.getPlaceDetails();
+        return mPlaceDetailRepository.getPlaceDetails();
     }
 
-    public void updateUserRestaurantChoice(String placeId, String restaurantName, User currentUser) {
-        userRepository.updateUserRestaurantChoice(placeId, restaurantName, currentUser);
+    public void updateUserRestaurantChoice(String placeId, String restaurantName, User currentUser, String restaurantAddress) {
+        userRepository.updateUserRestaurantChoice(placeId, restaurantName, currentUser, restaurantAddress);
     }
 
     public MutableLiveData<List<User>> getCoworkers() {

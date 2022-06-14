@@ -16,6 +16,7 @@ public class User {
     private String restaurantChoiceId;
     private String restaurantChoiceName;
     public List<String> likedRestaurants = new ArrayList<>();
+    private String restaurantChoiceAddress;
 
 
 
@@ -79,6 +80,23 @@ public class User {
         this.email = email;
     }
 
+    public String getRestaurantChoiceAddress() {
+        return restaurantChoiceAddress;
+    }
+
+    public void setRestaurantChoiceAddress(String restaurantChoiceAddress) {
+        this.restaurantChoiceAddress = restaurantChoiceAddress;
+    }
+
+    public List<String> getLikedRestaurants() {
+
+        return likedRestaurants;
+    }
+
+    public void setLikedRestaurants(List<String> likedRestaurants) {
+        this.likedRestaurants = likedRestaurants;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -99,15 +117,5 @@ public class User {
                 ", avatarURL='" + avatarURL + '\'' +
                 ", email='" + email + '\'' +
                 '}';
-    }
-
-
-    public List<String> getLikedRestaurants() {
-
-        return likedRestaurants;
-    }
-
-    public void setLikedRestaurants(List<String> likedRestaurants) {
-        this.likedRestaurants = likedRestaurants;
     }
 }

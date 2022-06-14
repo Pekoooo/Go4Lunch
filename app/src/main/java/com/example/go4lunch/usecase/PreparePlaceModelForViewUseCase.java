@@ -11,7 +11,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PrepareResponseModelForViewUseCase {
+public class PreparePlaceModelForViewUseCase {
 
     public static List<Restaurant> invoke(List<PlaceModel> placeModelList, Location currentLocation) {
         List<Restaurant> listToDisplay = new ArrayList<>();
