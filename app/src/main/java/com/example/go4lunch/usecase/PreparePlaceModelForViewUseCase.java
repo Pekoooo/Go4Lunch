@@ -4,10 +4,8 @@ import android.location.Location;
 import android.util.Log;
 
 import com.example.go4lunch.model.AppModel.Restaurant;
-import com.example.go4lunch.model.GooglePlacesModel.NearbyResponseModel;
 import com.example.go4lunch.model.GooglePlacesModel.PlaceModel;
 import com.google.android.gms.maps.model.LatLng;
-
 import java.util.ArrayList;
 import java.util.List;
 

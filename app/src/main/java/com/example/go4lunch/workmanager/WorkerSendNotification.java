@@ -34,10 +34,11 @@ public class WorkerSendNotification extends androidx.work.Worker  {
     private static final String CHANNEL_ID = "notification";
     private static final String CHANNEL_NAME = "notification channel";
     private static final String TAG = "MyWorkerNotif";
+    private static final String TAG_WORK_MANAGER = "MyWorkManager";
     private static final String COLLECTION_NAME = "users";
     private static final int NOTIFICATION_ID = 1;
     private final Context context;
-    private List<User> coworkers;
+    private final List<User> coworkers;
     private final User user;
 
 
@@ -45,8 +46,9 @@ public class WorkerSendNotification extends androidx.work.Worker  {
     public WorkerSendNotification(
             @NonNull Context context,
             @NonNull WorkerParameters workerParams) throws ExecutionException, InterruptedException {
-
         super(context, workerParams);
+
+        Log.d(TAG, "WorkerSendNotification: is called");
 
         this.context = context;
         user = Tasks.await(GetCurrentUserFromDBUseCase.invoke());
@@ -58,7 +60,7 @@ public class WorkerSendNotification extends androidx.work.Worker  {
     @NonNull
     @Override
     public Result doWork() {
-        Log.d(TAG, "doWork: is called");
+        Log.d(TAG_WORK_MANAGER, "doWork: is called");
         List<String> coworkersComing = getCoworkersComing(user, coworkers);
         createNotification(coworkersComing);
 
@@ -67,7 +69,7 @@ public class WorkerSendNotification extends androidx.work.Worker  {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createNotification(List<String> coworkersComing) {
-        Log.d(TAG, "createNotification: creating notification");
+        Log.d(TAG_WORK_MANAGER, "createNotification: creating notification");
 
         String notification;
         StringBuilder stringBuilderWorkmates = new StringBuilder();
@@ -110,11 +112,7 @@ public class WorkerSendNotification extends androidx.work.Worker  {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void sendNotification(String notification) {
-        Log.d(TAG, "sendNotification: sending notification");
-
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
-        NotificationManager manager=(NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-        manager.createNotificationChannel(channel);
+        Log.d(TAG_WORK_MANAGER, "sendNotification: sending notification");
 
         NotificationCompat.Style style = new NotificationCompat.BigTextStyle().bigText(notification);
 

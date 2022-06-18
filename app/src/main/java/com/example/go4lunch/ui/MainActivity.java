@@ -2,6 +2,8 @@ package com.example.go4lunch.ui;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private final Clock clock = Clock.systemDefaultZone();
     private MainViewModel viewModel;
     private static final String TAG = "MyMainActivity";
-    public static final String REMINDER_REQUEST = "reminder";
+    private static final String TAG_WORK_MANAGER = "MyWorkManager";
     private ActivityMainBinding binding;
     private final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private TextView drawerUserName;
@@ -94,13 +96,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
-        workManager = WorkManager.getInstance(this);
-        checkForPerms();
-
-        bindViewHeader();
         setContentView(binding.getRoot());
+        workManager = WorkManager.getInstance(this);
+
+        checkForPerms();
+        bindViewHeader();
         initUi();
-        setNotifications();
+        createNotificationChannel();
+        setNotificationWorker();
 
 
         // CHECK FOR LOGIN
@@ -111,31 +114,47 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void setNotifications() {
-        Log.d(TAG, "setNotifications: is called");
+    private void createNotificationChannel() {
+        Log.d(TAG_WORK_MANAGER, "createNotificationChannel: is called");
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    private void setNotificationWorker() {
+        Log.d(TAG_WORK_MANAGER, "setNotificationWorker: is called");
         LocalDateTime currentDate = LocalDateTime.now(clock);
         LocalDateTime thisNoon = currentDate.with(LocalTime.of(12, 0));
 
         if (currentDate.isAfter(thisNoon)) {
             thisNoon = thisNoon.plusDays(1);
         }
-
+        
         long timeLeft = ChronoUnit
                 .MILLIS
                 .between(currentDate, thisNoon);
+        
+        Log.d(TAG_WORK_MANAGER, "setNotificationWorker: " + timeLeft);
 
         Constraints constraints = new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build();
 
         PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(
                 WorkerSendNotification.class,
-                10,
-                TimeUnit.SECONDS)
+                1,
+                TimeUnit.DAYS)
                 .addTag("TEST")
                 .setConstraints(constraints)
-                .setInitialDelay(1, TimeUnit.SECONDS)
+                .setInitialDelay(timeLeft, TimeUnit.MILLISECONDS)
                 .build();
-
-
+        
         workManager.enqueueUniquePeriodicWork(
                 "TEST",
                 ExistingPeriodicWorkPolicy.REPLACE,
@@ -145,21 +164,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         workManager.getWorkInfoByIdLiveData(workRequest.getId()).observe(this, new Observer<WorkInfo>() {
             @Override
             public void onChanged(WorkInfo workInfo) {
-                Log.d(TAG, "onChanged: " + workInfo.getState());
+                Log.d(TAG_WORK_MANAGER, "onChanged: " + workInfo.getState());
             }
         });
-    }
-
-    public void initViewModels() {
-
     }
 
     private void bindViewHeader() {
         View parentView = binding.navView.getHeaderView(0);
 
-        drawerUserName     = parentView.findViewById(R.id.drawer_profile_name);
-        drawerUserEmail    = parentView.findViewById(R.id.drawer_profile_email);
-        drawerUserPicture  = parentView.findViewById(R.id.drawer_profile_picture);
+        drawerUserName = parentView.findViewById(R.id.drawer_profile_name);
+        drawerUserEmail = parentView.findViewById(R.id.drawer_profile_email);
+        drawerUserPicture = parentView.findViewById(R.id.drawer_profile_picture);
     }
 
     private void initUi() {
@@ -191,7 +206,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Log.d(TAG, "getDeviceLocation: SecurityException" + e.getMessage());
         }
     }
-
 
     private void checkForPerms() {
         if (EasyPermissions.hasPermissions(this, perms)) {
@@ -243,12 +257,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-
-
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
+        Log.d(TAG, "onSignInResult: is called");
 
         IdpResponse response = result.getIdpResponse();
         if (result.getResultCode() == Activity.RESULT_OK) {
+            Log.d(TAG, "onSignInResult: result ok");
 
             //Create auth user in Firestore db
             viewModel.createUser();
@@ -283,6 +297,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void getCurrentUserData() {
+        Log.d(TAG, "getCurrentUserData: is called");
         GetCurrentUserFromDBUseCase.invoke().addOnSuccessListener(user -> {
             drawerUserName = MainActivity.this.findViewById(R.id.drawer_profile_name);
             drawerUserEmail = MainActivity.this.findViewById(R.id.drawer_profile_email);
@@ -297,6 +312,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void updateDrawerUi(User user) {
+        Log.d(TAG, "updateDrawerUi: is called");
         drawerUserName.setText(user.getUserName());
         if (user.getEmail() != null) {
             drawerUserEmail.setText(user.getEmail());
@@ -311,10 +327,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .into(drawerUserPicture);
         }
     }
-
-
-
-
 
     private void setNavController() {
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {

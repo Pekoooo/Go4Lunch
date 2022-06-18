@@ -132,7 +132,6 @@ public class UserRepository {
     }
 
     public Boolean isCurrentUserLogged() {
-        Log.d(TAG, "isCurrentUserLogged: is called");
         return (GetCurrentUserFromAuthUseCase.invoke() != null);
     }
 
@@ -151,5 +150,9 @@ public class UserRepository {
     public void removeFavouritePlace(String placeId, User currentUser) {
         currentUser.likedRestaurants.remove(placeId);
         getUsersCollection().document(currentUser.getUid()).set(currentUser);
+    }
+
+    public void deleteUser(String uid){
+        getUsersCollection().document(uid).delete();
     }
 }

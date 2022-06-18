@@ -53,6 +53,7 @@
     <string name="todays_lunch">Today\'s lunch !</string>
     <string name="channel">notification channel</string>
     <string name="channel_description">channel for 12pm notification</string>
+    <string name="delete_account">Delete Account</string>
 
 </resources>
 

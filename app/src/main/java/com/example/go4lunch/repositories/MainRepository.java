@@ -65,6 +65,7 @@ public class MainRepository {
         String latlng = getLatLngToString(currentLocation);
         googlePlacesService.searchRestaurants(latlng, DEFAULT_TYPE_SEARCH, DEFAULT_RADIUS_SEARCH, BuildConfig.API_KEY)
                 .enqueue(new Callback<NearbyResponseModel>() {
+
                     @Override
                     public void onResponse(@NonNull Call<NearbyResponseModel> call, @NonNull Response<NearbyResponseModel> response) {
                         if (response.body() != null) {
