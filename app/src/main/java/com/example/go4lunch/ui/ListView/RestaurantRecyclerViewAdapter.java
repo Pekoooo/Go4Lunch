@@ -20,6 +20,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.R;
 import com.example.go4lunch.model.AppModel.Restaurant;
+import com.example.go4lunch.usecase.GetNumberOfParticipantsUseCase;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
     private List<Restaurant> place;
     private static final String TAG = "MyRestoRecyclerView";
     private final OnItemClickListener onItemClickListener;
+
 
     public interface OnItemClickListener {
         void onItemClick(int position);
@@ -43,14 +45,27 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.restaurant_list_row, parent, false);
 
+
+
+
+
         return new RestaurantResultHolder(itemView, onItemClickListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RestaurantResultHolder holder, int position) {
 
+
+
         Restaurant currentRestaurant = place.get(position);
+        GetNumberOfParticipantsUseCase useCase = new GetNumberOfParticipantsUseCase(
+                currentRestaurant.getPlaceId()
+        );
+
+        int participants = useCase.invoke();
+
         String distanceToDisplay = Math.round(currentRestaurant.getDistance()) + " m";
+
 
         String placePhotoApiCall;
         if(currentRestaurant.getPhotoReference() == null){
@@ -65,7 +80,7 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         holder.restaurantInfo.setText(currentRestaurant.getAddress());
         holder.restaurantStars.setRating(currentRestaurant.getRating());
         holder.restaurantDistance.setText(distanceToDisplay);
-        //holder.coworkersGoing.setText(firebase database...);
+        holder.coworkersGoing.setText(String.valueOf(participants));
 
         if(currentRestaurant.isOpen()){
                 holder.openOrClosed.setText(R.string.open);

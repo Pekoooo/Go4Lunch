@@ -70,7 +70,7 @@ dependencies {
     implementation 'com.twitter.sdk.android:twitter:3.1.1'
 
     //FacebookSDK
-    implementation 'com.facebook.android:facebook-login:latest.release'
+    implementation 'com.facebook.android:facebook-android-sdk:13.2.0'
 
     // EASYPERMISSIONS
     implementation 'pub.devrel:easypermissions:3.0.0'
@@ -93,6 +93,9 @@ dependencies {
 
     // WORKMANAGER
     implementation "androidx.work:work-runtime:2.7.1"
+
+    //MockWebServer
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.8.1'
     
 }
 

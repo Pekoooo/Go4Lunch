@@ -19,11 +19,11 @@ public class Restaurant {
     private float rating;
     private float distance;
     private LatLng latLng;
+    private int participants;
 
 
 
-
-    public Restaurant(String name, String address, @Nullable String photoReference, String placeId, boolean isOpen, float rating, float distance, LatLng latLng){
+    public Restaurant(String name, String address, @Nullable String photoReference, String placeId, boolean isOpen, float rating, float distance, LatLng latLng, int participants){
         this.name = name;
         this.address = address;
         this.photoReference = photoReference;
@@ -32,6 +32,7 @@ public class Restaurant {
         this.rating = rating;
         this.distance = distance;
         this.latLng = latLng;
+        this.participants = participants;
 
     }
 
@@ -110,5 +111,13 @@ public class Restaurant {
 
     public void setFavourite(boolean favourite) {
         isFavourite = favourite;
+    }
+
+    public int getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(int participants) {
+        this.participants = participants;
     }
 }

@@ -5,11 +5,18 @@ import android.util.Log;
 
 import com.example.go4lunch.model.AppModel.Restaurant;
 import com.example.go4lunch.model.GooglePlacesModel.PlaceModel;
+import com.example.go4lunch.repositories.UserRepository;
 import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PreparePlaceModelForViewUseCase {
+
+    UserRepository userRepository;
+
+    public PreparePlaceModelForViewUseCase(){
+        userRepository = UserRepository.getInstance();
+    }
 
     public static List<Restaurant> invoke(List<PlaceModel> placeModelList, Location currentLocation) {
         List<Restaurant> listToDisplay = new ArrayList<>();
@@ -49,11 +56,16 @@ public class PreparePlaceModelForViewUseCase {
                 isOpen = currentPlace.getOpeningHours().getOpenNow();
             }
 
-            Restaurant restaurantToCreate = new Restaurant(name, address, photoReference, placeId, isOpen, rating, distance, latLng);
+            GetNumberOfParticipantsUseCase useCase = new GetNumberOfParticipantsUseCase(placeId);
+
+            int participants = useCase.invoke();
+
+            Restaurant restaurantToCreate = new Restaurant(name, address, photoReference, placeId, isOpen, rating, distance, latLng, participants);
             listToDisplay.add(restaurantToCreate);
         }
         return listToDisplay;
     }
+
 
     private static float getDistance(PlaceModel currentPlace, Location currentLocation) {
         float distance;

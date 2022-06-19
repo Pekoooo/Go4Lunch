@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.go4lunch.R;
 import com.example.go4lunch.databinding.ActivitySettingsBinding;
@@ -53,6 +54,7 @@ public class SettingsActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<Void> task) {
 
                         viewModel.deleteUser(userUid);
+                        Toast.makeText(SettingsActivity.this, "Account deleted successfully", Toast.LENGTH_SHORT).show();
 
                         Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
                         startActivity(intent);

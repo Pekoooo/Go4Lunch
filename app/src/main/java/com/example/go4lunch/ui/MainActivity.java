@@ -269,7 +269,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(this, "Signed in successfully !", Toast.LENGTH_SHORT).show();
 
             //Get user info from db and update UI
-            getCurrentUserData();
+            viewModel.getUserUid().observe(this, new Observer<String>() {
+                @Override
+                public void onChanged(String uid) {
+                    getUserDataWithID(uid);
+                }
+            });
+
 
         } else {
             if (response == null)
@@ -294,6 +300,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .setLogo(R.drawable.go4lunch_ic_sign)
                 .build();
         signInLauncher.launch(signInIntent);
+    }
+
+    private void getUserDataWithID(String uid) {
+        Log.d(TAG, "getUserDataWithID: is called");
+
+        viewModel.getUserWithUid(uid).addOnCompleteListener(task -> {
+            currentUser = task.getResult().toObject(User.class);
+
+           if(currentUser != null){
+               updateDrawerUi(currentUser);
+           }
+        });
+
     }
 
     private void getCurrentUserData() {

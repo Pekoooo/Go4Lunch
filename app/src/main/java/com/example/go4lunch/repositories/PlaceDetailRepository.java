@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.go4lunch.BuildConfig;
+import com.example.go4lunch.model.AppModel.GoogleDetailApiHolder;
 import com.example.go4lunch.model.AppModel.Restaurant;
 import com.example.go4lunch.model.GooglePlacesModel.NearbyResponseModel;
 import com.example.go4lunch.model.GooglePlacesModel.PlaceDetailResponseModel;
@@ -31,29 +32,11 @@ public class PlaceDetailRepository {
     private static PlaceDetailRepository sPlaceDetailRepository;
     private final GoogleDetailsService googleDetailsService;
     private static final String TAG = "MyRestaurantRepository";
-    private final MutableLiveData<PlaceDetailResponseModel> placeDetails;
+
+    private final MutableLiveData<PlaceDetailResponseModel> placeDetails = new MutableLiveData<>();
 
     public PlaceDetailRepository() {
-
-        placeDetails = new MutableLiveData<>();
-
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-        OkHttpClient client =
-                new OkHttpClient.Builder()
-                        .addInterceptor(
-                                loggingInterceptor
-                        )
-                        .build();
-
-
-        googleDetailsService = new Retrofit.Builder()
-                .baseUrl("https://maps.googleapis.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
-                .build()
-                .create(GoogleDetailsService.class);
+        googleDetailsService = GoogleDetailApiHolder.getInstance();
     }
 
     public static PlaceDetailRepository getInstance() {

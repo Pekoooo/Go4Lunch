@@ -27,6 +27,7 @@ public class UserRepository {
     private static final String RESTAURANT_CHOICE_NAME = "restaurantChoiceName";
     private final MutableLiveData<List<User>> coworkersComing = new MutableLiveData<>();
     private final MutableLiveData<List<User>> allCoworkers = new MutableLiveData<>();
+    private final MutableLiveData<String> userUid = new MutableLiveData<>();
 
     private static final String TAG = "MyUserRepository";
     private static UserRepository userRepository;
@@ -74,6 +75,7 @@ public class UserRepository {
                 });
     }
 
+
     public void fetchAllCoworkers() {
         Log.d(TAG, "fetchCoworkersComing: is called");
         getUsersCollection()
@@ -118,17 +120,18 @@ public class UserRepository {
             String username = user.getDisplayName();
             String uid = user.getUid();
             String email = user.getEmail();
-
             User userToCreate = new User(uid, username, urlPicture, email);
-
             Task<DocumentSnapshot> userData = getUserData();
             userData.addOnSuccessListener(documentSnapshot -> {
                 if (documentSnapshot.contains(RESTAURANT_CHOICE_ID)) {
                     userToCreate.setRestaurantChoiceId((String) documentSnapshot.get(RESTAURANT_CHOICE_ID));
                 }
                 this.getUsersCollection().document(uid).set(userToCreate);
+                userUid.setValue(user.getUid());
             });
         }
+
+
     }
 
     public Boolean isCurrentUserLogged() {
@@ -154,5 +157,13 @@ public class UserRepository {
 
     public void deleteUser(String uid){
         getUsersCollection().document(uid).delete();
+    }
+
+    public Task<DocumentSnapshot> getUserWithUid(String uid){
+        return getUsersCollection().document(uid).get();
+    }
+
+    public MutableLiveData<String> getUserUid(){
+        return userUid;
     }
 }

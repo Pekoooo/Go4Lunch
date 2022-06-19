@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.go4lunch.BuildConfig;
+import com.example.go4lunch.model.AppModel.GooglePlacesApiHolder;
 import com.example.go4lunch.model.AppModel.Restaurant;
 import com.example.go4lunch.model.GooglePlacesModel.NearbyResponseModel;
 import com.example.go4lunch.model.GooglePlacesModel.PlaceModel;
@@ -24,6 +25,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainRepository {
+    public static final String BASE_URL = "https://maps.googleapis.com/";
     private static MainRepository mainRepository;
     private static final String TAG = "MyMainRepository";
     private static final String DEFAULT_TYPE_SEARCH = "restaurant";
@@ -33,23 +35,7 @@ public class MainRepository {
     private final MutableLiveData<Location> location = new MutableLiveData<>();
 
     public MainRepository() {
-
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-        OkHttpClient client =
-                new OkHttpClient.Builder()
-                        .addInterceptor(
-                                loggingInterceptor
-                        )
-                        .build();
-
-        googlePlacesService = new Retrofit.Builder()
-                .baseUrl("https://maps.googleapis.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
-                .build()
-                .create(GooglePlacesService.class);
+        googlePlacesService = GooglePlacesApiHolder.getInstance();
     }
 
     public static MainRepository getInstance() {
