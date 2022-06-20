@@ -80,6 +80,13 @@ public class PlaceModel implements Parcelable {
     @Expose
     private String phone;
 
+    public PlaceModel(String name, String placeId){
+
+        this.name = name;
+        this.placeId = placeId;
+
+    }
+
     protected PlaceModel(Parcel in) {
         businessStatus = in.readString();
         icon = in.readString();

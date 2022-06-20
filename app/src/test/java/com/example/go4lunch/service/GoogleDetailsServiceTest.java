@@ -11,13 +11,10 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+
 import static org.junit.Assert.*;
 
 public class GoogleDetailsServiceTest {
@@ -25,13 +22,13 @@ public class GoogleDetailsServiceTest {
     private static final String TEST_PLACE_ID_SEARCH = "ChIJ3aygTC-D5kcRP4VOGK4rvCI";
     private static final String EXPECTED_PLACE_NAME_RESPONSE = "L'Orient Palace";
     public MockWebServer mockBackEnd;
-    public GoogleDetailsService api;
+    public GoogleDetailsService SUT;
 
     @Before
     public void setUp() {
         mockBackEnd = new MockWebServer();
 
-        api = GoogleDetailApiHolder.getInstance(mockBackEnd.url("/"));
+        SUT = GoogleDetailApiHolder.getInstance(mockBackEnd.url("/"));
 
     }
 
@@ -48,7 +45,7 @@ public class GoogleDetailsServiceTest {
 
         mockBackEnd.enqueue(response);
 
-        Response<PlaceDetailResponseModel> result = api.getDetails(TEST_PLACE_ID_SEARCH, BuildConfig.API_KEY).execute();
+        Response<PlaceDetailResponseModel> result = SUT.getDetails(TEST_PLACE_ID_SEARCH, BuildConfig.API_KEY).execute();
 
         assert result.body() != null;
         PlaceModel resultPlaceModel = result.body().getResult();

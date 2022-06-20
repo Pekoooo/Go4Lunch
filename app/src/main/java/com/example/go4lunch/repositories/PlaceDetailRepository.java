@@ -33,7 +33,7 @@ public class PlaceDetailRepository {
     private final GoogleDetailsService googleDetailsService;
     private static final String TAG = "MyRestaurantRepository";
 
-    private final MutableLiveData<PlaceDetailResponseModel> placeDetails = new MutableLiveData<>();
+    private final MutableLiveData<PlaceModel> placeDetails = new MutableLiveData<>();
 
     public PlaceDetailRepository() {
         googleDetailsService = GoogleDetailApiHolder.getInstance();
@@ -52,7 +52,7 @@ public class PlaceDetailRepository {
                     @Override
                     public void onResponse(@NonNull Call<PlaceDetailResponseModel> call, @NonNull Response<PlaceDetailResponseModel> response) {
                         if (response.body() != null) {
-                            placeDetails.setValue(response.body());
+                            placeDetails.setValue(response.body().getResult());
                         }
                     }
 
@@ -63,7 +63,7 @@ public class PlaceDetailRepository {
                 });
     }
 
-    public MutableLiveData<PlaceDetailResponseModel> getPlaceDetails() {
+    public MutableLiveData<PlaceModel> getPlaceDetails() {
         return placeDetails;
     }
 

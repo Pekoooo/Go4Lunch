@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.go4lunch.model.AppModel.User;
 import com.example.go4lunch.model.GooglePlacesModel.PlaceDetailResponseModel;
+import com.example.go4lunch.model.GooglePlacesModel.PlaceModel;
 import com.example.go4lunch.repositories.PlaceDetailRepository;
 import com.example.go4lunch.repositories.UserRepository;
 
@@ -30,7 +31,7 @@ public class ViewModelDetailedView extends AndroidViewModel {
         mPlaceDetailRepository.searchPlaceDetail(placeId);
     }
 
-    public MutableLiveData<PlaceDetailResponseModel> getPlaceDetails() {
+    public MutableLiveData<PlaceModel> getPlaceDetails() {
         return mPlaceDetailRepository.getPlaceDetails();
     }
 

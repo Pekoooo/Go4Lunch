@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -48,11 +49,14 @@ public class DetailedActivity extends AppCompatActivity {
             viewModel.searchPlaceDetail(placeId);
             viewModel.fetchCoworkersComing(placeId);
 
-            viewModel.getPlaceDetails().observe(this, placeDetailResponseModel -> {
-                placeDetailResult = placeDetailResponseModel.getResult();
-                getUserData();
-            });
+            viewModel.getPlaceDetails().observe(this, new Observer<PlaceModel>() {
+                @Override
+                public void onChanged(PlaceModel placeModel) {
+                    placeDetailResult = placeModel;
 
+                    getUserData();
+                }
+            });
 
             viewModel.getCoworkers().observe(this, this::setRecyclerView);
         }
