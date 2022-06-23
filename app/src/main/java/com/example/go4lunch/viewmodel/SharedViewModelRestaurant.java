@@ -4,6 +4,7 @@ import android.app.Application;
 import android.location.Location;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
@@ -18,33 +19,30 @@ import java.util.List;
 public class SharedViewModelRestaurant extends AndroidViewModel {
 
     private static final String TAG = "MyViewModelRestaurant";
-    private final PlaceDetailRepository mPlaceDetailRepository;
-    private final MainRepository mainRepository;
     private final UserRepository userRepository;
-    private final MutableLiveData<List<Restaurant>> listOfRestaurants;
-    private final MutableLiveData<List<User>> listOfUsers;
-    private MutableLiveData<Location> location = new MutableLiveData<>();
+    private final MainRepository mainRepository;
 
     public SharedViewModelRestaurant(@NonNull Application application) {
         super(application);
 
-        mPlaceDetailRepository  = PlaceDetailRepository.getInstance();
-        mainRepository          = MainRepository.getInstance();
-        userRepository          = UserRepository.getInstance();
+        mainRepository = MainRepository.getInstance();
+        userRepository = UserRepository.getInstance();
 
-        listOfRestaurants  = mainRepository.getListOfRestaurants();
-        location           = mainRepository.getLocation();
-        listOfUsers        = userRepository.getAllCoworkers();
+    }
 
-
+    @VisibleForTesting
+    public SharedViewModelRestaurant(Application application, MainRepository mainRepository, UserRepository userRepository ){
+        super(application);
+        this.userRepository = userRepository;
+        this.mainRepository = mainRepository;
     }
 
     public MutableLiveData<Location> getLocation() {
-        return location;
+        return mainRepository.getLocation();
     }
 
     public MutableLiveData<List<Restaurant>> getListOfRestaurants() {
-        return listOfRestaurants;
+        return mainRepository.getListOfRestaurants();
     }
 
     public void fetchCoworkers(){
@@ -52,7 +50,7 @@ public class SharedViewModelRestaurant extends AndroidViewModel {
     }
 
     public MutableLiveData<List<User>> getAllCoworkers(){
-        return listOfUsers;
+        return userRepository.getAllCoworkers();
     }
 
     public List<Restaurant> setRestaurantWithFavourite(List<User> allUsers, List<Restaurant> restaurantList) {

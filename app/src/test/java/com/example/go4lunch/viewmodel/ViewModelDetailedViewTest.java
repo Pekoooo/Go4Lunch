@@ -23,67 +23,112 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
+import static org.mockito.Mockito.*;
+
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import android.app.Application;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ViewModelDetailedViewTest {
 
+    private ViewModelDetailedView viewModel;
+
     @Rule
     public final InstantTaskExecutorRule mInstantTaskExecutorRule = new InstantTaskExecutorRule();
 
-    private final PlaceDetailRepository placeRepository = Mockito.mock(PlaceDetailRepository.class);
-    private final UserRepository userRepository = Mockito.mock(UserRepository.class);
+    //MOCK
     private final Application application = Mockito.mock(Application.class);
-
-    private final MutableLiveData<PlaceModel> getPlaceDetails = new MutableLiveData<>();
-
-    ViewModelDetailedView viewModel;
+    private final PlaceDetailRepository placeDetailRepository = Mockito.mock(PlaceDetailRepository.class);
+    private final UserRepository userRepository = Mockito.mock(UserRepository.class);
+    //DATA TO BE RETURNED
+    private final MutableLiveData<Restaurant> placeDetail = new MutableLiveData<>();
+    private final MutableLiveData<List<User>> users = new MutableLiveData<>();
 
 
     @Before
-    public void setUp() throws Exception {
-
-        Mockito.doReturn(getPlaceDetails)
-                .when(placeRepository)
+    public void setUp() {
+        //RETURNS OF MOCK
+        Mockito.doReturn(placeDetail)
+                .when(placeDetailRepository)
                 .getPlaceDetails();
-        
 
-        getPlaceDetails.setValue(getPlaceDetailsInfo());
+        Mockito.doReturn(users)
+                .when(userRepository)
+                .getCoworkersComing();
 
-        viewModel = new ViewModelDetailedView(application);
+        placeDetail.setValue(getDummyPlace());
+        users.setValue(getDummyCoworkers());
+
+        viewModel = new ViewModelDetailedView(userRepository, placeDetailRepository, application);
 
     }
 
 
-
-
-
-    @After
-    public void tearDown() throws Exception {
-    }
 
     @Test
-    public void test_test() {
-
-        LiveDataTestUtil.observeForTesting(viewModel.getPlaceDetails(), new LiveDataTestUtil.OnObservedListener<PlaceModel>() {
+    public void viewModel_should_return_dummy_place() {
+        //WHEN
+        LiveDataTestUtil.observeForTesting(viewModel.getPlaceDetails(), new LiveDataTestUtil.OnObservedListener<Restaurant>() {
             @Override
-            public void onObserved(PlaceModel detail) {
-                assertEquals(getPlaceDetailsInfo(), detail);
+            public void onObserved(Restaurant liveData) {
+
+                //THEN
+                assertEquals(placeDetail.getValue(), liveData);
+                verify(placeDetailRepository, times(1)).getPlaceDetails();
             }
         });
 
     }
 
+    @Test
+    public void viewModel_should_return_coworker_list() {
+        LiveDataTestUtil.observeForTesting(viewModel.getCoworkers(), new LiveDataTestUtil.OnObservedListener<List<User>>() {
+            @Override
+            public void onObserved(List<User> liveData) {
 
-    private PlaceModel getPlaceDetailsInfo() {
-        return new PlaceModel("L'Orient Palace", "1");
+                //THEN
+                assertEquals(users.getValue(), liveData);
+                verify(userRepository, times(1)).getCoworkersComing();
+
+            }
+        });
+    }
+
+    private Restaurant getDummyPlace() {
+        return new Restaurant(
+                "Name",
+                "Address",
+                "PhotoRef",
+                "PlaceId",
+                false,
+                4,
+                "PhoneNumber",
+                "Website"
+        );
+    }
+
+    private List<User> getDummyCoworkers() {
+
+        List<User> dummyCoworkersList = new ArrayList<>();
+        dummyCoworkersList.add(new User("uid0", "name0", "avatarUrl0", "email0"));
+        dummyCoworkersList.add(new User("uid1", "name1", "avatarUrl1", "email1"));
+        dummyCoworkersList.add(new User("uid2", "name2", "avatarUrl2", "email2"));
+
+        return dummyCoworkersList;
     }
 
 

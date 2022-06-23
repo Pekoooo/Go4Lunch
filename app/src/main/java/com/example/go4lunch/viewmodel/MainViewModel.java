@@ -4,6 +4,7 @@ import android.app.Application;
 import android.location.Location;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
@@ -16,7 +17,7 @@ public class MainViewModel extends AndroidViewModel {
 
     private final MainRepository mainRepository;
     private final UserRepository userRepository;
-    private final MutableLiveData<String> userUid;
+    private MutableLiveData<String> userUid;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
@@ -24,6 +25,13 @@ public class MainViewModel extends AndroidViewModel {
         userRepository = UserRepository.getInstance();
         userUid = UserRepository.getInstance().getUserUid();
 
+    }
+
+    @VisibleForTesting
+    public MainViewModel(Application application, MainRepository mainRepository, UserRepository userRepository){
+        super(application);
+        this.userRepository = userRepository;
+        this.mainRepository = mainRepository;
     }
 
     public void searchRestaurants(Location currentLocation) {

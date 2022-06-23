@@ -2,28 +2,27 @@
     <string name="app_name">Go4Lunch</string>
     <string name="menu">Menu</string>
     <string name="settings">Settings</string>
-    <string name="power">Power</string>
     <string name="your_lunch">YOUR LUNCH</string>
     <string name="settings1">SETTINGS</string>
     <string name="logout">LOGOUT</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="login">Connexion</string>
     <string name="rationale">Permission for location is required for application to function fully</string>
     <string name="pref_radius_key">radius</string>
     <string name="SEARCH_TYPE">restaurant</string>
-    <string name="GOOGLE_API_KEY">AIzaSyDwt4HaFs_pyttzXrf9lEZF5IMgyDkVcN4</string>
+    <string name="GOOGLE_API_KEY" translatable="false">AIzaSyDwt4HaFs_pyttzXrf9lEZF5IMgyDkVcN4</string>
     <string name="open">Open now</string>
     <string name="close">Closed now</string>
     <string name="no_email_found">Email unavailable</string>
     <string name="no_username_found">Username unavailable</string>
-    <string name="no_profile_picture_found">https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png</string>
-    <string name="go">GO!</string>
+    <string name="no_profile_picture_found" translatable="false">https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png</string>
+    <string name="go" translatable="false">GO!</string>
+    <string name="no_choice_made">has not made a choice yet</string>
 
 
-    <string name="facebook_application_id">697543894913960</string>
-    <string name="fb_login_protocol_scheme">fb697543894913960</string>
-    <string name="facebook_client_token">dbe3329572b502c94efac75eb3697b75</string>
+    <string name="facebook_application_id" translatable="false">697543894913960</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb697543894913960</string>
+    <string name="facebook_client_token" translatable="false">dbe3329572b502c94efac75eb3697b75</string>
 
 
     <string name="Im_hungry">I\'m Hungry!</string>
@@ -32,18 +31,18 @@
     <string name="Available_workmates">Available workmates</string>
     <string name="twitter_consumer_key" translatable="false"> dInTkcy3iv2HkHcPrvhh1O14w </string>
     <string name="twitter_consumer_secret" translatable="false"> HcEVUfeMZtHaN1MPj6R63ImIjV5VMBLqodck2pO7tWLJ4ONOcC </string>
-    <string name="scarlett_is_eating_at_pop_s_chicken_s">Scarlett is eating at POP\'S CHICKEN\'S</string>
-    <string name="dummy_layout_distance">500</string>
-    <string name="dummy_restaurant_name">L\'OPEN BAR</string>
-    <string name="dummy_restaurant_address">French - 12 rue du Faubourg Poissonnière</string>
-    <string name="dummy_open_text">Open until 7pm</string>
-    <string name="_8">(8)</string>
-    <string name="dummy_long_restaurant_name">LeZincLeZincLeZincLeZincLeZinc</string>
+    <string name="scarlett_is_eating_at_pop_s_chicken_s" translatable="false">Scarlett is eating at POP\'S CHICKEN\'S</string>
+    <string name="dummy_layout_distance" translatable="false">500</string>
+    <string name="dummy_restaurant_name" translatable="false">L\'OPEN BAR</string>
+    <string name="dummy_restaurant_address" translatable="false">French - 12 rue du Faubourg Poissonnière</string>
+    <string name="dummy_open_text" translatable="false">Open until 7pm</string>
+    <string name="_8" translatable="false">(8)</string>
+    <string name="dummy_long_restaurant_name" translatable="false">LeZincLeZincLeZincLeZincLeZinc</string>
     <string name="no_phone_number">no phone number</string>
     <string name="search">search</string>
     <string name="no_email">No email</string>
-    <string name="default_photo_ref">https://media.istockphoto.com/photos/variety-food-on-a-table-cloth-restaurant-directly-above-picture-id1235685137?k=20&amp;m=1235685137&amp;s=612x612&amp;w=0&amp;h=ddicngEKM9UbIKflROe3tMj7DnC8VVT6F_m_jct2afs=</string>
-    <string name="coma">,</string>
+    <string name="default_photo_ref" translatable="false">https://media.istockphoto.com/photos/variety-food-on-a-table-cloth-restaurant-directly-above-picture-id1235685137?k=20&amp;m=1235685137&amp;s=612x612&amp;w=0&amp;h=ddicngEKM9UbIKflROe3tMj7DnC8VVT6F_m_jct2afs=</string>
+    <string name="coma" translatable="false">,</string>
     <string name="and">and</string>
     <string name="todays_lunch">Today\'s lunch !</string>
     <string name="channel">notification channel</string>

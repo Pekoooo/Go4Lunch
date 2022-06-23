@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Go4Lunch</string>
+    <string name="settings">Paramètres</string>
+    <string name="your_lunch">Votre déjeuner</string>
+    <string name="settings1">PARAMETRES</string>
+    <string name="logout">"Déconnexion "</string>
+    <string name="navigation_drawer_open">Ouvrir le menu de navigation</string>
+    <string name="navigation_drawer_close">Fermer le menu de navigation</string>
+    <string name="rationale">Permission d\'accès a la geolocalisation nécessaire pour le bon fonctionnement de l\'application</string>
+    <string name="pref_radius_key">radius</string>
+    <string name="SEARCH_TYPE">restaurant</string>
+    <string name="open">Ouvert</string>
+    <string name="close">Fermé</string>
+    <string name="no_email_found">Email indisponible</string>
+    <string name="no_username_found">Nom d\'utilisateur indisponible</string>
+    <string name="Im_hungry">J\'ai faim !</string>
+    <string name="Coworkers_coming">Collègues qui participent</string>
+    <string name="Restaurants_around">Restaurants aux alentours</string>
+    <string name="Available_workmates">Collègues disponible</string>
+    <string name="no_phone_number">pas de numéro de téléphone</string>
+    <string name="search">rechercher</string>
+    <string name="no_email">Pas d\'email</string>
+    <string name="and">et</string>
+    <string name="todays_lunch">Le déjeuner d\'aujourd\'hui</string>
+    <string name="channel">canal de notification</string>
+    <string name="channel_description">canal pour les notifications de 12h</string>
+    <string name="delete_account">Supprimer le compte</string>
+    <string name="menu">Menu</string>
+    <string name="no_choice_made">n\'a pas encore fait de choix</string>
+</resources>

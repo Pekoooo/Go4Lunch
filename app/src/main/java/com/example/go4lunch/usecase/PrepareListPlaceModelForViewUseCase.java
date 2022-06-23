@@ -10,11 +10,11 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PreparePlaceModelForViewUseCase {
+public class PrepareListPlaceModelForViewUseCase {
 
     UserRepository userRepository;
 
-    public PreparePlaceModelForViewUseCase(){
+    public PrepareListPlaceModelForViewUseCase(){
         userRepository = UserRepository.getInstance();
     }
 

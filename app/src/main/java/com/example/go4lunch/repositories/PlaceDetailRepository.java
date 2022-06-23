@@ -1,8 +1,6 @@
 package com.example.go4lunch.repositories;
 
-import android.location.Location;
 import android.util.Log;
-import android.util.LruCache;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
@@ -10,22 +8,14 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.model.AppModel.GoogleDetailApiHolder;
 import com.example.go4lunch.model.AppModel.Restaurant;
-import com.example.go4lunch.model.GooglePlacesModel.NearbyResponseModel;
 import com.example.go4lunch.model.GooglePlacesModel.PlaceDetailResponseModel;
 import com.example.go4lunch.model.GooglePlacesModel.PlaceModel;
 import com.example.go4lunch.service.GoogleDetailsService;
-import com.example.go4lunch.service.GooglePlacesService;
-import com.example.go4lunch.usecase.PreparePlaceModelForViewUseCase;
+import com.example.go4lunch.usecase.PreparePlaceModelForDetailViewUseCase;
 
-import java.util.List;
-
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PlaceDetailRepository {
 
@@ -33,7 +23,7 @@ public class PlaceDetailRepository {
     private final GoogleDetailsService googleDetailsService;
     private static final String TAG = "MyRestaurantRepository";
 
-    private final MutableLiveData<PlaceModel> placeDetails = new MutableLiveData<>();
+    private final MutableLiveData<Restaurant> placeDetails = new MutableLiveData<>();
 
     public PlaceDetailRepository() {
         googleDetailsService = GoogleDetailApiHolder.getInstance();
@@ -52,7 +42,8 @@ public class PlaceDetailRepository {
                     @Override
                     public void onResponse(@NonNull Call<PlaceDetailResponseModel> call, @NonNull Response<PlaceDetailResponseModel> response) {
                         if (response.body() != null) {
-                            placeDetails.setValue(response.body().getResult());
+                           Restaurant restaurant = PreparePlaceModelForDetailViewUseCase.invoke(response.body().getResult());
+                            placeDetails.setValue(restaurant);
                         }
                     }
 
@@ -63,7 +54,7 @@ public class PlaceDetailRepository {
                 });
     }
 
-    public MutableLiveData<PlaceModel> getPlaceDetails() {
+    public MutableLiveData<Restaurant> getPlaceDetails() {
         return placeDetails;
     }
 

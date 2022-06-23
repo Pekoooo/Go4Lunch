@@ -20,9 +20,12 @@ public class Restaurant {
     private float distance;
     private LatLng latLng;
     private int participants;
+    private String phoneNumber;
+    private String website;
 
 
 
+    //Constructor for list view
     public Restaurant(String name, String address, @Nullable String photoReference, String placeId, boolean isOpen, float rating, float distance, LatLng latLng, int participants){
         this.name = name;
         this.address = address;
@@ -34,6 +37,19 @@ public class Restaurant {
         this.latLng = latLng;
         this.participants = participants;
 
+    }
+
+
+    //Constructor for detailed view
+    public Restaurant(String name, String address, @Nullable String photoReference, String placeId, boolean isOpen, float rating, String phoneNumber, String website){
+        this.name = name;
+        this.address = address;
+        this.photoReference = photoReference;
+        this.placeId = placeId;
+        this.isOpen = isOpen;
+        this.rating = rating;
+        this.phoneNumber = phoneNumber;
+        this.website = website;
     }
 
     public String getName() {
@@ -119,5 +135,21 @@ public class Restaurant {
 
     public void setParticipants(int participants) {
         this.participants = participants;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
     }
 }

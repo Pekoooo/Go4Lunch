@@ -12,17 +12,13 @@ import com.example.go4lunch.model.AppModel.Restaurant;
 import com.example.go4lunch.model.GooglePlacesModel.NearbyResponseModel;
 import com.example.go4lunch.model.GooglePlacesModel.PlaceModel;
 import com.example.go4lunch.service.GooglePlacesService;
-import com.example.go4lunch.usecase.PreparePlaceModelForViewUseCase;
+import com.example.go4lunch.usecase.PrepareListPlaceModelForViewUseCase;
 
 import java.util.List;
 
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainRepository {
     public static final String BASE_URL = "https://maps.googleapis.com/";
@@ -56,7 +52,7 @@ public class MainRepository {
                     public void onResponse(@NonNull Call<NearbyResponseModel> call, @NonNull Response<NearbyResponseModel> response) {
                         if (response.body() != null) {
                             List<PlaceModel> result = response.body().getResults();
-                            List<Restaurant> restaurants = PreparePlaceModelForViewUseCase.invoke(result, currentLocation);
+                            List<Restaurant> restaurants = PrepareListPlaceModelForViewUseCase.invoke(result, currentLocation);
                             listOfRestaurants.setValue(restaurants);
                         }
                     }

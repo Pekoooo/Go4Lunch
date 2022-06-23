@@ -17,20 +17,20 @@ import com.bumptech.glide.Glide;
 import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.R;
 import com.example.go4lunch.databinding.ActivityDetailedBinding;
+import com.example.go4lunch.model.AppModel.Restaurant;
 import com.example.go4lunch.model.AppModel.User;
 import com.example.go4lunch.model.GooglePlacesModel.PlaceModel;
 import com.example.go4lunch.usecase.GetCurrentUserFromDBUseCase;
 import com.example.go4lunch.viewmodel.ViewModelDetailedView;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DetailedActivity extends AppCompatActivity {
 
     private static final String TAG = "MyDetailedActivity";
     private User currentUser;
-    private PlaceModel placeDetailResult;
+    private Restaurant currentRestaurant;
     private ActivityDetailedBinding binding;
     private ViewModelDetailedView viewModel;
     private String placeId;
@@ -49,12 +49,12 @@ public class DetailedActivity extends AppCompatActivity {
             viewModel.searchPlaceDetail(placeId);
             viewModel.fetchCoworkersComing(placeId);
 
-            viewModel.getPlaceDetails().observe(this, new Observer<PlaceModel>() {
+            viewModel.getPlaceDetails().observe(this, new Observer<Restaurant>() {
                 @Override
-                public void onChanged(PlaceModel placeModel) {
-                    placeDetailResult = placeModel;
-
+                public void onChanged(Restaurant restaurant) {
+                    currentRestaurant = restaurant;
                     getUserData();
+
                 }
             });
 
@@ -96,7 +96,7 @@ public class DetailedActivity extends AppCompatActivity {
 
             if (getCurrentUser().getRestaurantChoiceId() == null) {
                 //NO CHOICE MADE BY USER ? CLICK = SELECT CURRENT RESTAURANT
-                viewModel.updateUserRestaurantChoice(placeDetailResult.getPlaceId(), placeDetailResult.getName(), getCurrentUser(), placeDetailResult.getVicinity());
+                viewModel.updateUserRestaurantChoice(currentRestaurant.getPlaceId(), currentRestaurant.getName(), getCurrentUser(), currentRestaurant.getAddress());
                 viewModel.fetchCoworkersComing(placeId);
                 animateChecked();
 
@@ -104,16 +104,16 @@ public class DetailedActivity extends AppCompatActivity {
                 //USER MADE CHOICE ?
                 //YES →
                 viewModel.fetchCoworkersComing(placeId);
-                if (getCurrentUser().getRestaurantChoiceId().equals(placeDetailResult.getPlaceId())) {
+                if (getCurrentUser().getRestaurantChoiceId().equals(currentRestaurant.getPlaceId())) {
                     // IS IT THE SAME ONE THAT WE ARE WATCHING ?
                     // YES ? →
                     viewModel.updateUserRestaurantChoice(null, null, getCurrentUser(), null);
                     animateUnchecked();
 
 
-                } else if (!getCurrentUser().getRestaurantChoiceId().equals(placeDetailResult.getPlaceId())) {
+                } else if (!getCurrentUser().getRestaurantChoiceId().equals(currentRestaurant.getPlaceId())) {
                     //NO ? →
-                    viewModel.updateUserRestaurantChoice(placeDetailResult.getPlaceId(), placeDetailResult.getName(), getCurrentUser(), placeDetailResult.getVicinity());
+                    viewModel.updateUserRestaurantChoice(currentRestaurant.getPlaceId(), currentRestaurant.getName(), getCurrentUser(), currentRestaurant.getAddress());
                     animateChecked();
 
                 }
@@ -121,14 +121,8 @@ public class DetailedActivity extends AppCompatActivity {
         });
 
         binding.cardviewCallButton.setOnClickListener(v -> {
-            String restaurantPhoneNumber;
-            if (placeDetailResult.getPhone() != null) {
-                restaurantPhoneNumber = placeDetailResult.getPhone();
-            } else {
-                restaurantPhoneNumber = "no phone number";
-            }
 
-            if (restaurantPhoneNumber.equals("no phone number")) {
+            if (currentRestaurant.getPhoneNumber().equals("No Phone Number")) {
                 Toast.makeText(
                         DetailedActivity.this,
                         "No phone number for this establishment",
@@ -136,21 +130,15 @@ public class DetailedActivity extends AppCompatActivity {
             } else {
                 Intent intent1 = new Intent(
                         Intent.ACTION_DIAL,
-                        Uri.parse("tel:" + restaurantPhoneNumber));
+                        Uri.parse("tel:" + currentRestaurant.getPhoneNumber()));
                 startActivity(intent1);
             }
         });
 
         binding.cardviewWebsiteButton.setOnClickListener(v -> {
-            String restaurantWebsite;
 
-            if (placeDetailResult.getWebsite() != null) {
-                restaurantWebsite = placeDetailResult.getWebsite();
-            } else {
-                restaurantWebsite = null;
-            }
-            if (restaurantWebsite != null) {
-                Intent intent2 = new Intent(Intent.ACTION_VIEW, Uri.parse(restaurantWebsite));
+            if (currentRestaurant.getWebsite().equals("No Website")) {
+                Intent intent2 = new Intent(Intent.ACTION_VIEW, Uri.parse(currentRestaurant.getWebsite()));
                 startActivity(intent2);
             } else {
                 Toast.makeText(this, "No website for this restaurant", Toast.LENGTH_SHORT).show();
@@ -171,10 +159,10 @@ public class DetailedActivity extends AppCompatActivity {
     private void setButtonState() {
         //TODO TURN IF STATEMENT INTO TERNARY CONDITION
         //SETS FAB STATE
-        if (getCurrentUser().getRestaurantChoiceId() == null || !getCurrentUser().getRestaurantChoiceId().equals(placeDetailResult.getPlaceId())) {
+        if (getCurrentUser().getRestaurantChoiceId() == null || !getCurrentUser().getRestaurantChoiceId().equals(currentRestaurant.getPlaceId())) {
             setUnchecked();
 
-        } else if (getCurrentUser().getRestaurantChoiceId().equals(placeDetailResult.getPlaceId())) {
+        } else if (getCurrentUser().getRestaurantChoiceId().equals(currentRestaurant.getPlaceId())) {
             setChecked();
         }
 
@@ -192,23 +180,16 @@ public class DetailedActivity extends AppCompatActivity {
     }
 
     private void setDetails() {
+        binding.cardviewRestaurantName.setText(currentRestaurant.getName());
+        binding.cardviewRestaurantAddress.setText(currentRestaurant.getAddress());
 
-        float ratingValue;
-
-        binding.cardviewRestaurantName.setText(placeDetailResult.getName());
-        binding.cardviewRestaurantAddress.setText(placeDetailResult.getVicinity());
-        if (placeDetailResult.getRating() != null) {
-            ratingValue = placeDetailResult.getRating();
-        } else {
-            ratingValue = 3f;
-        }
-
+        float ratingValue = currentRestaurant.getRating();
         binding.ratingBar.setRating(ratingValue);
 
         String placePhotoApiCall;
-        if (placeDetailResult.getPhotos() != null) {
+        if (currentRestaurant.getPhotoReference() != null) {
             placePhotoApiCall = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference="
-                    + placeDetailResult.getPhotos().get(0).getPhotoReference()
+                    + currentRestaurant.getPhotoReference()
                     + "&key="
                     + BuildConfig.API_KEY;
         } else {
@@ -225,7 +206,7 @@ public class DetailedActivity extends AppCompatActivity {
         if (!currentUser.likedRestaurants.isEmpty()) {
             for (int i = 0; i < currentUser.likedRestaurants.size(); i++) {
                 String restaurantNameAtPosition = currentUser.likedRestaurants.get(i);
-                if (restaurantNameAtPosition.equals(placeDetailResult.getPlaceId())) {
+                if (restaurantNameAtPosition.equals(currentRestaurant.getPlaceId())) {
                     isFavourite = true;
                     break;
                 } else {

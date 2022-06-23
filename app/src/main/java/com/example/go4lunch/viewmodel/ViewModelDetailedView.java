@@ -4,12 +4,12 @@ import android.app.Application;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.go4lunch.model.AppModel.Restaurant;
 import com.example.go4lunch.model.AppModel.User;
-import com.example.go4lunch.model.GooglePlacesModel.PlaceDetailResponseModel;
-import com.example.go4lunch.model.GooglePlacesModel.PlaceModel;
 import com.example.go4lunch.repositories.PlaceDetailRepository;
 import com.example.go4lunch.repositories.UserRepository;
 
@@ -18,21 +18,28 @@ import java.util.List;
 public class ViewModelDetailedView extends AndroidViewModel {
 
     private static final String TAG = "MyDetailRestaurant";
-    private final PlaceDetailRepository mPlaceDetailRepository;
+    private final PlaceDetailRepository placeDetailRepository;
     private final UserRepository userRepository;
 
     public ViewModelDetailedView(@NonNull Application application) {
         super(application);
-        mPlaceDetailRepository = PlaceDetailRepository.getInstance();
+        placeDetailRepository = PlaceDetailRepository.getInstance();
         userRepository = UserRepository.getInstance();
     }
 
-    public void searchPlaceDetail(String placeId) {
-        mPlaceDetailRepository.searchPlaceDetail(placeId);
+    @VisibleForTesting
+    public ViewModelDetailedView(UserRepository userRepository, PlaceDetailRepository placeDetailRepository, Application application) {
+        super(application);
+        this.userRepository = userRepository;
+        this.placeDetailRepository = placeDetailRepository;
     }
 
-    public MutableLiveData<PlaceModel> getPlaceDetails() {
-        return mPlaceDetailRepository.getPlaceDetails();
+    public void searchPlaceDetail(String placeId) {
+        placeDetailRepository.searchPlaceDetail(placeId);
+    }
+
+    public MutableLiveData<Restaurant> getPlaceDetails() {
+        return placeDetailRepository.getPlaceDetails();
     }
 
     public void updateUserRestaurantChoice(String placeId, String restaurantName, User currentUser, String restaurantAddress) {
