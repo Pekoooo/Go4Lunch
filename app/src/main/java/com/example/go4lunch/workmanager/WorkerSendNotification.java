@@ -67,7 +67,7 @@ public class WorkerSendNotification extends androidx.work.Worker  {
         return Result.success();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+
     private void createNotification(List<String> coworkersComing) {
         Log.d(TAG_WORK_MANAGER, "createNotification: creating notification");
 
@@ -110,7 +110,7 @@ public class WorkerSendNotification extends androidx.work.Worker  {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+
     private void sendNotification(String notification) {
         Log.d(TAG_WORK_MANAGER, "sendNotification: sending notification");
 
@@ -147,13 +147,10 @@ public class WorkerSendNotification extends androidx.work.Worker  {
 
     public List<User> fetchAllCoworkers() throws ExecutionException, InterruptedException {
         List<User> allCoworkers = new ArrayList<>();
-        Tasks.await(getUsersCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot documents : task.getResult()) {
-                        allCoworkers.add(documents.toObject(User.class));
-                    }
+        Tasks.await(getUsersCollection().get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot documents : task.getResult()) {
+                    allCoworkers.add(documents.toObject(User.class));
                 }
             }
         }));

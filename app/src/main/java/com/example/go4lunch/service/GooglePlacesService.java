@@ -3,8 +3,6 @@ package com.example.go4lunch.service;
 import com.example.go4lunch.model.GooglePlacesModel.NearbyResponseModel;
 
 import retrofit2.Call;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 

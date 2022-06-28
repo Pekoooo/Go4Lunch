@@ -10,8 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.go4lunch.model.AppModel.Restaurant;
 import com.example.go4lunch.model.AppModel.User;
-import com.example.go4lunch.repositories.MainRepository;
-import com.example.go4lunch.repositories.PlaceDetailRepository;
+import com.example.go4lunch.repositories.RestaurantRepository;
 import com.example.go4lunch.repositories.UserRepository;
 
 import java.util.List;
@@ -20,29 +19,29 @@ public class SharedViewModelRestaurant extends AndroidViewModel {
 
     private static final String TAG = "MyViewModelRestaurant";
     private final UserRepository userRepository;
-    private final MainRepository mainRepository;
+    private final RestaurantRepository mRestaurantRepository;
 
     public SharedViewModelRestaurant(@NonNull Application application) {
         super(application);
 
-        mainRepository = MainRepository.getInstance();
+        mRestaurantRepository = RestaurantRepository.getInstance();
         userRepository = UserRepository.getInstance();
 
     }
 
     @VisibleForTesting
-    public SharedViewModelRestaurant(Application application, MainRepository mainRepository, UserRepository userRepository ){
+    public SharedViewModelRestaurant(Application application, RestaurantRepository restaurantRepository, UserRepository userRepository ){
         super(application);
         this.userRepository = userRepository;
-        this.mainRepository = mainRepository;
+        this.mRestaurantRepository = restaurantRepository;
     }
 
     public MutableLiveData<Location> getLocation() {
-        return mainRepository.getLocation();
+        return mRestaurantRepository.getLocation();
     }
 
     public MutableLiveData<List<Restaurant>> getListOfRestaurants() {
-        return mainRepository.getListOfRestaurants();
+        return mRestaurantRepository.getListOfRestaurants();
     }
 
     public void fetchCoworkers(){

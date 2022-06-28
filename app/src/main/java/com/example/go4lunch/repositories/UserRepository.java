@@ -2,19 +2,16 @@ package com.example.go4lunch.repositories;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.go4lunch.model.AppModel.User;
 import com.example.go4lunch.usecase.GetCurrentUserFromAuthUseCase;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +19,7 @@ import java.util.List;
 public class UserRepository {
 
     private static final String COLLECTION_NAME = "users";
-    private static final String USERNAME_FIELD = "userName";
     private static final String RESTAURANT_CHOICE_ID = "restaurantChoiceId";
-    private static final String RESTAURANT_CHOICE_NAME = "restaurantChoiceName";
     private final MutableLiveData<List<User>> coworkersComing = new MutableLiveData<>();
     private final MutableLiveData<List<User>> allCoworkers = new MutableLiveData<>();
     private final MutableLiveData<String> userUid = new MutableLiveData<>();
@@ -135,7 +130,7 @@ public class UserRepository {
     }
 
     public Boolean isCurrentUserLogged() {
-        return (GetCurrentUserFromAuthUseCase.invoke() != null);
+        return GetCurrentUserFromAuthUseCase.invoke() != null;
     }
 
     public void updateUserRestaurantChoice(String placeId, String restaurantName, User currentUser, String restaurantAddress) {

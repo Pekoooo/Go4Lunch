@@ -1,7 +1,6 @@
 package com.example.go4lunch.usecase;
 
 import com.example.go4lunch.model.AppModel.User;
-import com.example.go4lunch.repositories.MainRepository;
 import com.example.go4lunch.repositories.UserRepository;
 
 import java.util.ArrayList;

@@ -2,26 +2,22 @@ package com.example.go4lunch.ui.CoworkerView;
 
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.go4lunch.R;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.example.go4lunch.databinding.FragmentCoworkersBinding;
 import com.example.go4lunch.model.AppModel.User;
 import com.example.go4lunch.viewmodel.ViewModelCoworkerList;
 import com.google.android.material.divider.MaterialDividerItemDecoration;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -45,7 +41,7 @@ public class CoworkersFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentCoworkersBinding.inflate(inflater, container, false);
         return binding.getRoot();

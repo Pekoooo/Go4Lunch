@@ -20,29 +20,29 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainRepository {
-    public static final String BASE_URL = "https://maps.googleapis.com/";
-    private static MainRepository mainRepository;
+public class RestaurantRepository {
+    private static RestaurantRepository sRestaurantRepository;
+    private final GooglePlacesService googlePlacesService;
+
     private static final String TAG = "MyMainRepository";
     private static final String DEFAULT_TYPE_SEARCH = "restaurant";
     private static final int DEFAULT_RADIUS_SEARCH = 1000;
-    private final GooglePlacesService googlePlacesService;
+
     private final MutableLiveData<List<Restaurant>> listOfRestaurants = new MutableLiveData<>();
     private final MutableLiveData<Location> location = new MutableLiveData<>();
 
-    public MainRepository() {
+    public RestaurantRepository() {
         googlePlacesService = GooglePlacesApiHolder.getInstance();
     }
 
-    public static MainRepository getInstance() {
-        if (mainRepository == null) {
-            mainRepository = new MainRepository();
+    public static RestaurantRepository getInstance() {
+        if (sRestaurantRepository == null) {
+            sRestaurantRepository = new RestaurantRepository();
         }
-        return mainRepository;
+        return sRestaurantRepository;
     }
 
     public void searchRestaurants(Location currentLocation) {
-        Log.d(TAG, "searchRestaurants: is called");
         location.setValue(currentLocation);
         String latlng = getLatLngToString(currentLocation);
         googlePlacesService.searchRestaurants(latlng, DEFAULT_TYPE_SEARCH, DEFAULT_RADIUS_SEARCH, BuildConfig.API_KEY)

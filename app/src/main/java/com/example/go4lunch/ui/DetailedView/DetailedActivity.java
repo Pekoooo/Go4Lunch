@@ -9,7 +9,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -19,10 +18,8 @@ import com.example.go4lunch.R;
 import com.example.go4lunch.databinding.ActivityDetailedBinding;
 import com.example.go4lunch.model.AppModel.Restaurant;
 import com.example.go4lunch.model.AppModel.User;
-import com.example.go4lunch.model.GooglePlacesModel.PlaceModel;
 import com.example.go4lunch.usecase.GetCurrentUserFromDBUseCase;
 import com.example.go4lunch.viewmodel.ViewModelDetailedView;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.List;
 
@@ -49,13 +46,10 @@ public class DetailedActivity extends AppCompatActivity {
             viewModel.searchPlaceDetail(placeId);
             viewModel.fetchCoworkersComing(placeId);
 
-            viewModel.getPlaceDetails().observe(this, new Observer<Restaurant>() {
-                @Override
-                public void onChanged(Restaurant restaurant) {
-                    currentRestaurant = restaurant;
-                    getUserData();
+            viewModel.getPlaceDetails().observe(this, restaurant -> {
+                currentRestaurant = restaurant;
+                getUserData();
 
-                }
             });
 
             viewModel.getCoworkers().observe(this, this::setRecyclerView);
@@ -71,21 +65,18 @@ public class DetailedActivity extends AppCompatActivity {
     }
 
     private void getUserData() {
-        GetCurrentUserFromDBUseCase.invoke().addOnSuccessListener(new OnSuccessListener<User>() {
-            @Override
-            public void onSuccess(User user) {
-                currentUser = new User(
-                        user.getUid(),
-                        user.getUserName(),
-                        user.getAvatarURL(),
-                        user.getEmail()
-                );
+        GetCurrentUserFromDBUseCase.invoke().addOnSuccessListener(user -> {
+            currentUser = new User(
+                    user.getUid(),
+                    user.getUserName(),
+                    user.getAvatarURL(),
+                    user.getEmail()
+            );
 
-                currentUser.setRestaurantChoiceId(user.getRestaurantChoiceId());
-                currentUser.setLikedRestaurants(user.getLikedRestaurants());
-                DetailedActivity.this.setDetails();
-                DetailedActivity.this.setButtonLogic();
-            }
+            currentUser.setRestaurantChoiceId(user.getRestaurantChoiceId());
+            currentUser.setLikedRestaurants(user.getLikedRestaurants());
+            DetailedActivity.this.setDetails();
+            DetailedActivity.this.setButtonLogic();
         });
     }
 
@@ -108,6 +99,7 @@ public class DetailedActivity extends AppCompatActivity {
                     // IS IT THE SAME ONE THAT WE ARE WATCHING ?
                     // YES ? →
                     viewModel.updateUserRestaurantChoice(null, null, getCurrentUser(), null);
+
                     animateUnchecked();
 
 
@@ -137,7 +129,7 @@ public class DetailedActivity extends AppCompatActivity {
 
         binding.cardviewWebsiteButton.setOnClickListener(v -> {
 
-            if (currentRestaurant.getWebsite().equals("No Website")) {
+            if (!currentRestaurant.getWebsite().equals("No Website")) {
                 Intent intent2 = new Intent(Intent.ACTION_VIEW, Uri.parse(currentRestaurant.getWebsite()));
                 startActivity(intent2);
             } else {

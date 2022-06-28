@@ -12,8 +12,6 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.List;
 
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import retrofit2.Response;
@@ -28,13 +26,13 @@ public class GooglePlacesServiceTest {
     private static final int DEFAULT_RADIUS_SEARCH_FOR_TEST = 1000;
     private static final int EXPECTED_RESPONSE_LIST_SIZE = 7;
     private static final String EXPECTED_FIRST_RESTAURANT_NAME = "Marché d'à Côté";
-    public GooglePlacesService api;
+    public GooglePlacesService SUT;
 
     @Before
     public void setUp() {
         mockBackEnd = new MockWebServer();
 
-        api = GooglePlacesApiHolder.getInstance(mockBackEnd.url("/"));
+        SUT = GooglePlacesApiHolder.getInstance(mockBackEnd.url("/"));
 
     }
 
@@ -51,7 +49,7 @@ public class GooglePlacesServiceTest {
 
         mockBackEnd.enqueue(response);
 
-        Response<NearbyResponseModel> result = api.searchRestaurants(
+        Response<NearbyResponseModel> result = SUT.searchRestaurants(
                 EXPECTED_LATLNG,
                 DEFAULT_TYPE_SEARCH,
                 DEFAULT_RADIUS_SEARCH_FOR_TEST,

@@ -1,23 +1,9 @@
 package com.example.go4lunch.usecase;
 
-import android.location.Location;
-
 import com.example.go4lunch.model.AppModel.Restaurant;
 import com.example.go4lunch.model.GooglePlacesModel.PlaceModel;
-import com.example.go4lunch.repositories.UserRepository;
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nullable;
 
 public class PreparePlaceModelForDetailViewUseCase {
-    UserRepository userRepository;
-
-    public PreparePlaceModelForDetailViewUseCase(){
-        userRepository = UserRepository.getInstance();
-    }
 
     public static Restaurant invoke(PlaceModel placeModel) {
 
@@ -55,7 +41,7 @@ public class PreparePlaceModelForDetailViewUseCase {
 
         String website;
         if(placeModel.getWebsite() == null){
-            website = "";
+            website = "No Website";
         } else {
             website = placeModel.getWebsite();
         }

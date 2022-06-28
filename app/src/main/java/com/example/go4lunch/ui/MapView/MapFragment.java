@@ -1,15 +1,11 @@
 package com.example.go4lunch.ui.MapView;
 
 import static android.app.Activity.RESULT_OK;
-import static android.content.Context.NOTIFICATION_SERVICE;
 
 import android.Manifest;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,12 +18,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.go4lunch.BuildConfig;
@@ -36,11 +28,9 @@ import com.example.go4lunch.databinding.FragmentMapBinding;
 import com.example.go4lunch.model.AppModel.Restaurant;
 import com.example.go4lunch.model.AppModel.User;
 import com.example.go4lunch.ui.DetailedView.DetailedActivity;
-import com.example.go4lunch.usecase.GetCurrentUserFromDBUseCase;
 import com.example.go4lunch.utils.BitmapFromVectorUtil;
 import com.example.go4lunch.utils.GetBoundsUtil;
 import com.example.go4lunch.viewmodel.SharedViewModelRestaurant;
-import com.example.go4lunch.workmanager.WorkerSendNotification;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -49,8 +39,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
@@ -67,11 +55,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private static final String TAG = "MyMapFragment";
     private FragmentMapBinding binding;
     private static final float DEFAULT_ZOOM = 15f;
-    private static final int NOTIFICATION_ID = 1;
-    private static final String CHANNEL_ID = "notif";
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 123;
     private GoogleMap gMap;
-    private User currentUser;
     private Location currentLocation;
     private List<Restaurant> restaurantList = new ArrayList<>();
     private List<User> allUsers = new ArrayList<>();
@@ -124,12 +108,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         viewModel.getAllCoworkers().observe(requireActivity(), users ->
                 allUsers = users);
 
-        viewModel.getLocation().observe(getViewLifecycleOwner(), new Observer<Location>() {
-            @Override
-            public void onChanged(Location location) {
-                currentLocation = location;
-                initMap();
-            }
+        viewModel.getLocation().observe(getViewLifecycleOwner(), location -> {
+            currentLocation = location;
+            initMap();
         });
 
         viewModel.getListOfRestaurants().observe(requireActivity(), restaurants -> {
@@ -144,8 +125,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             if (currentLocation != null) {
                 moveCamera(new LatLng(
                                 currentLocation.getLatitude(),
-                                currentLocation.getLongitude()),
-                        DEFAULT_ZOOM
+                                currentLocation.getLongitude())
                 );
             }
 
@@ -164,14 +144,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
         gMap.setMyLocationEnabled(true);
         gMap.getUiSettings().setMyLocationButtonEnabled(false);
-        
+
+        if(viewModel.getLocation().getValue() != null){
             LatLng latLng = new LatLng(
                     viewModel.getLocation().getValue().getLatitude(),
                     viewModel.getLocation().getValue().getLongitude());
 
-            moveCamera(latLng, DEFAULT_ZOOM);
-
-
+            moveCamera(latLng);
+        }
     }
 
     private void initMap() {
@@ -183,9 +163,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private void moveCamera(LatLng latLng, float zoom) {
+    private void moveCamera(LatLng latLng) {
         Log.d(TAG, "moveCamera: is called");
-        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, MapFragment.DEFAULT_ZOOM));
     }
 
     private void setRestaurantMarker(List<Restaurant> restaurants) {

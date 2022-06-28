@@ -1,7 +1,5 @@
 package com.example.go4lunch.repositories;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
@@ -9,7 +7,6 @@ import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.model.AppModel.GoogleDetailApiHolder;
 import com.example.go4lunch.model.AppModel.Restaurant;
 import com.example.go4lunch.model.GooglePlacesModel.PlaceDetailResponseModel;
-import com.example.go4lunch.model.GooglePlacesModel.PlaceModel;
 import com.example.go4lunch.service.GoogleDetailsService;
 import com.example.go4lunch.usecase.PreparePlaceModelForDetailViewUseCase;
 

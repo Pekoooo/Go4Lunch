@@ -67,6 +67,12 @@ public class ListFragment extends Fragment implements RestaurantRecyclerViewAdap
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         binding = FragmentListRestaurantBinding.inflate(inflater, container, false);
@@ -79,9 +85,8 @@ public class ListFragment extends Fragment implements RestaurantRecyclerViewAdap
         super.onViewCreated(view, savedInstanceState);
         setRecyclerView();
         if (isAdded()){
-            viewModel.getLocation().observe(requireActivity(), location -> {
-                currentLocation = location;
-            });
+            viewModel.getLocation().observe(requireActivity(), location ->
+                    currentLocation = location);
 
             viewModel.getListOfRestaurants().observe(requireActivity(), restaurants -> {
                         this.restaurants = restaurants;

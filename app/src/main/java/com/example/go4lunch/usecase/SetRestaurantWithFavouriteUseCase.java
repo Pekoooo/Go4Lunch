@@ -3,7 +3,6 @@ package com.example.go4lunch.usecase;
 import com.example.go4lunch.model.AppModel.Restaurant;
 import com.example.go4lunch.model.AppModel.User;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SetRestaurantWithFavouriteUseCase {

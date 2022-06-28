@@ -48,8 +48,6 @@ public class PlaceModel implements Parcelable {
     @Expose
     private String reference;
 
-
-
     @SerializedName("scope")
     @Expose
     private String scope;

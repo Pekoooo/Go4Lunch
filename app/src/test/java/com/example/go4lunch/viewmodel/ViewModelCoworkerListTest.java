@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.go4lunch.model.AppModel.User;
 import com.example.go4lunch.repositories.PlaceDetailRepository;
 import com.example.go4lunch.repositories.UserRepository;
+import com.example.go4lunch.utils.GetDummies;
 import com.example.go4lunch.utils.LiveDataTestUtil;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -42,7 +43,7 @@ public class ViewModelCoworkerListTest {
                 .when(userRepository)
                 .getAllCoworkers();
 
-        users.setValue(getDummyCoworkers());
+        users.setValue(GetDummies.getDummyUserList());
 
         viewModel = new ViewModelCoworkerList(application, userRepository);
 
@@ -61,13 +62,4 @@ public class ViewModelCoworkerListTest {
 
     }
 
-    private List<User> getDummyCoworkers() {
-
-        List<User> dummyCoworkersList = new ArrayList<>();
-        dummyCoworkersList.add(new User("uid0", "name0", "avatarUrl0", "email0"));
-        dummyCoworkersList.add(new User("uid1", "name1", "avatarUrl1", "email1"));
-        dummyCoworkersList.add(new User("uid2", "name2", "avatarUrl2", "email2"));
-
-        return dummyCoworkersList;
-    }
 }

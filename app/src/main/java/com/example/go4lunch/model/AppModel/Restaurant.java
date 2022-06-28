@@ -1,7 +1,5 @@
 package com.example.go4lunch.model.AppModel;
 
-import android.location.Location;
-
 import com.google.android.gms.maps.model.LatLng;
 
 import javax.annotation.Nullable;
@@ -68,11 +66,12 @@ public class Restaurant {
         this.address = address;
     }
 
+    @Nullable
     public String getPhotoReference() {
         return photoReference;
     }
 
-    public void setPhotoReference(String photoReference) {
+    public void setPhotoReference(@Nullable String photoReference) {
         this.photoReference = photoReference;
     }
 
@@ -84,7 +83,6 @@ public class Restaurant {
         isOpen = open;
     }
 
-    @Nullable
     public float getRating() {
         return rating;
     }

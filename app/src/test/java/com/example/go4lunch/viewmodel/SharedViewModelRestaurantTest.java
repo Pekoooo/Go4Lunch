@@ -1,6 +1,6 @@
 package com.example.go4lunch.viewmodel;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -12,35 +12,29 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.go4lunch.model.AppModel.Restaurant;
 import com.example.go4lunch.model.AppModel.User;
-import com.example.go4lunch.model.GooglePlacesModel.LocationModel;
-import com.example.go4lunch.repositories.MainRepository;
+import com.example.go4lunch.repositories.RestaurantRepository;
 import com.example.go4lunch.repositories.UserRepository;
+import com.example.go4lunch.utils.GetDummies;
 import com.example.go4lunch.utils.LiveDataTestUtil;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 public class SharedViewModelRestaurantTest {
 
-    private static final double EXPECTED_LATITUDE = 37.0;
-    private static final double EXPECTED_LONGITUDE = 42.0;
     private static final int EXPECTED_RESTAURANT_AMOUNT = 2;
 
     @Rule
     public final InstantTaskExecutorRule mInstantTaskExecutorRule = new InstantTaskExecutorRule();
 
     private final UserRepository userRepository = Mockito.mock(UserRepository.class);
-    private final MainRepository mainRepository = Mockito.mock(MainRepository.class);
-    private Location location = Mockito.mock(Location.class);
+    private final RestaurantRepository mRestaurantRepository = Mockito.mock(RestaurantRepository.class);
+    private final Location location = Mockito.mock(Location.class);
     private final Application application = Mockito.mock(Application.class);
 
     private final MutableLiveData<Location> locationLiveData = new MutableLiveData<>();
@@ -49,21 +43,12 @@ public class SharedViewModelRestaurantTest {
 
 
     @Before
-    public void setUp() throws Exception {
-        Mockito.doReturn(EXPECTED_LATITUDE)
-                .when(location)
-                .getLatitude();
-
-        Mockito.doReturn(EXPECTED_LONGITUDE)
-                .when(location)
-                .getLongitude();
-
-
+    public void setUp() {
         Mockito.doReturn(locationLiveData)
-                .when(mainRepository)
+                .when(mRestaurantRepository)
                 .getLocation();
 
-        viewModel = new SharedViewModelRestaurant(application, mainRepository, userRepository);
+        viewModel = new SharedViewModelRestaurant(application, mRestaurantRepository, userRepository);
 
         locationLiveData.setValue(location);
     }
@@ -71,18 +56,17 @@ public class SharedViewModelRestaurantTest {
     @Test
     public void viewModel_should_return_location() {
 
-        LiveDataTestUtil.observeForTesting(viewModel.getLocation(), new LiveDataTestUtil.OnObservedListener<Location>() {
-            @Override
-            public void onObserved(Location liveData) {
-                assertEquals(locationLiveData.getValue(), liveData);
-            }
+        LiveDataTestUtil.observeForTesting(viewModel.getLocation(), liveData -> {
+            assertEquals(locationLiveData.getValue(), liveData);
+
+            verify(mRestaurantRepository, times(1)).getLocation();
         });
     }
 
     @Test
     public void viewModel_should_return_restaurants_with_favourite(){
         
-        List<User> userList = getDummyUserList();
+        List<User> userList = GetDummies.getDummyUserList();
         List<Restaurant> restaurantList = getDummyRestaurantList();
         
         List<Restaurant> restaurantWithFavourite = viewModel.setRestaurantWithFavourite(userList, restaurantList);
@@ -100,21 +84,7 @@ public class SharedViewModelRestaurantTest {
         return dummyRestaurants;
     }
 
-    private List<User> getDummyUserList() {
 
-        List<User> dummyUserList = new ArrayList<>();
-        dummyUserList.add(new User("uid0", "name0", "avatarUrl0", "email0"));
-        dummyUserList.add(new User("uid1", "name1", "avatarUrl1", "email1"));
-        dummyUserList.add(new User("uid2", "name2", "avatarUrl2", "email2"));
-
-        User user = dummyUserList.get(0);
-        user.setRestaurantChoiceId("123");
-
-        User user2 = dummyUserList.get(1);
-        user2.setRestaurantChoiceId("1234");
-
-        return dummyUserList;
-    }
 
     private int checkForFavourite(List<Restaurant> restaurantWithFavourite) {
         int numberOfRestaurantWithFavourite = 0;

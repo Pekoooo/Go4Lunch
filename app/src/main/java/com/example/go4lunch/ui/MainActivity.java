@@ -1,6 +1,7 @@
 package com.example.go4lunch.ui;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -23,7 +24,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -32,7 +32,6 @@ import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
 import com.bumptech.glide.Glide;
@@ -69,8 +68,6 @@ import pub.devrel.easypermissions.EasyPermissions;
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, EasyPermissions.PermissionCallbacks {
 
-    private static final int RC_SIGN_IN = 1606;
-    private static final int ERROR_DIALOG_REQUEST = 1989;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 123;
     private static final String CHANNEL_ID = "notification";
     static User currentUser = new User();
@@ -132,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void setNotificationWorker() {
         Log.d(TAG_WORK_MANAGER, "setNotificationWorker: is called");
         LocalDateTime currentDate = LocalDateTime.now(clock);
-        LocalDateTime thisNoon = currentDate.with(LocalTime.of(12, 0));
+        LocalDateTime thisNoon = currentDate.with(LocalTime.of(15, 50));
 
         if (currentDate.isAfter(thisNoon)) {
             thisNoon = thisNoon.plusDays(1);
@@ -152,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 TimeUnit.DAYS)
                 .addTag("TEST")
                 .setConstraints(constraints)
-                .setInitialDelay(timeLeft, TimeUnit.MILLISECONDS)
+                .setInitialDelay(1, TimeUnit.SECONDS)
                 .build();
         
         workManager.enqueueUniquePeriodicWork(
@@ -161,12 +158,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 workRequest
         );
 
-        workManager.getWorkInfoByIdLiveData(workRequest.getId()).observe(this, new Observer<WorkInfo>() {
-            @Override
-            public void onChanged(WorkInfo workInfo) {
-                Log.d(TAG_WORK_MANAGER, "onChanged: " + workInfo.getState());
-            }
-        });
+        workManager.getWorkInfoByIdLiveData(workRequest.getId()).observe(this, workInfo ->
+                Log.d(TAG_WORK_MANAGER, "onChanged: " + workInfo.getState()));
     }
 
     private void bindViewHeader() {
@@ -269,12 +262,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(this, "Signed in successfully !", Toast.LENGTH_SHORT).show();
 
             //Get user info from db and update UI
-            viewModel.getUserUid().observe(this, new Observer<String>() {
-                @Override
-                public void onChanged(String uid) {
-                    getUserDataWithID(uid);
-                }
-            });
+            viewModel.getUserUid().observe(this, this::getUserDataWithID);
 
 
         } else {
@@ -347,6 +335,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    @SuppressLint("NonConstantResourceId")
     private void setNavController() {
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             switch (destination.getId()) {
@@ -375,6 +364,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {

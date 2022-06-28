@@ -1,12 +1,12 @@
 package com.example.go4lunch.usecase;
 
 import android.location.Location;
-import android.util.Log;
 
 import com.example.go4lunch.model.AppModel.Restaurant;
 import com.example.go4lunch.model.GooglePlacesModel.PlaceModel;
 import com.example.go4lunch.repositories.UserRepository;
 import com.google.android.gms.maps.model.LatLng;
+
 import java.util.ArrayList;
 import java.util.List;
 
