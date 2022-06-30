@@ -21,8 +21,6 @@ public class Restaurant {
     private String phoneNumber;
     private String website;
 
-
-
     //Constructor for list view
     public Restaurant(String name, String address, @Nullable String photoReference, String placeId, boolean isOpen, float rating, float distance, LatLng latLng, int participants){
         this.name = name;
@@ -36,7 +34,6 @@ public class Restaurant {
         this.participants = participants;
 
     }
-
 
     //Constructor for detailed view
     public Restaurant(String name, String address, @Nullable String photoReference, String placeId, boolean isOpen, float rating, String phoneNumber, String website){

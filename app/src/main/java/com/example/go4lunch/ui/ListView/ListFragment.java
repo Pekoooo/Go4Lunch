@@ -67,23 +67,16 @@ public class ListFragment extends Fragment implements RestaurantRecyclerViewAdap
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-    }
-
-    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         binding = FragmentListRestaurantBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onViewCreated: is being called");
         super.onViewCreated(view, savedInstanceState);
         setRecyclerView();
+
         if (isAdded()){
             viewModel.getLocation().observe(requireActivity(), location ->
                     currentLocation = location);
@@ -97,10 +90,10 @@ public class ListFragment extends Fragment implements RestaurantRecyclerViewAdap
     }
 
     public void setRecyclerView() {
-        binding.recyclerView.setHasFixedSize(true);
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new RestaurantRecyclerViewAdapter(this);
         binding.recyclerView.setAdapter(adapter);
+        binding.recyclerView.setHasFixedSize(true);
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerView.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
     }
 
@@ -154,8 +147,6 @@ public class ListFragment extends Fragment implements RestaurantRecyclerViewAdap
         intent.putExtra("placeDetails", placeId);
         startActivity(intent);
     }
-
-
 }
 
 

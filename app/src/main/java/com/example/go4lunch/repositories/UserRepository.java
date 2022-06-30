@@ -18,14 +18,15 @@ import java.util.List;
 
 public class UserRepository {
 
+    private static UserRepository userRepository;
     private static final String COLLECTION_NAME = "users";
-    private static final String RESTAURANT_CHOICE_ID = "restaurantChoiceId";
+    private static final String TAG = "MyUserRepository";
+    private static final String RESTAURANT_ID_FIELD_NAME = "restaurantChoiceId";
+    private static final String RESTAURANT_ADDRESS_FIELD_NAME = "restaurantChoiceAddress";
+    private static final String RESTAURANT_NAME_FIELD_NAME = "restaurantChoiceName";
     private final MutableLiveData<List<User>> coworkersComing = new MutableLiveData<>();
     private final MutableLiveData<List<User>> allCoworkers = new MutableLiveData<>();
     private final MutableLiveData<String> userUid = new MutableLiveData<>();
-
-    private static final String TAG = "MyUserRepository";
-    private static UserRepository userRepository;
 
     public static UserRepository getInstance() {
         if (userRepository == null) {
@@ -34,32 +35,25 @@ public class UserRepository {
         return userRepository;
     }
 
-    private CollectionReference getUsersCollection() {
-        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
-    }
-
-    // Get User Data from Firestore
     public Task<DocumentSnapshot> getUserData() {
-        String uid = this.getCurrentUserUID();
+        String uid = getCurrentUserUID();
         if (uid != null) {
-            return this.getUsersCollection().document(uid).get();
+            return getUsersCollection().document(uid).get();
         } else {
             return null;
         }
     }
 
     public void fetchCoworkersComing(String placeId) {
-        Log.d(TAG, "fetchCoworkersComing: is called");
         getUsersCollection()
-                .whereEqualTo("restaurantChoiceId", placeId)
+                .whereEqualTo(RESTAURANT_ID_FIELD_NAME, placeId)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         List<User> currentCoworkers = new ArrayList<>();
+
                         for (QueryDocumentSnapshot documents : task.getResult()) {
                             currentCoworkers.add(documents.toObject(User.class));
-                            Log.d(TAG, "onComplete: adding: " + documents.toObject(User.class).getUserName() + " to the list");
-
                         }
 
                         coworkersComing.postValue(currentCoworkers);
@@ -70,31 +64,55 @@ public class UserRepository {
                 });
     }
 
-
     public void fetchAllCoworkers() {
-        Log.d(TAG, "fetchCoworkersComing: is called");
         getUsersCollection()
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         List<User> allCoworkers = new ArrayList<>();
+
                         for (QueryDocumentSnapshot documents : task.getResult()) {
                             allCoworkers.add(documents.toObject(User.class));
-                            Log.d(TAG, "onComplete: adding: " + documents.toObject(User.class).getUserName() + " to the list");
                         }
+
                         this.allCoworkers.postValue(allCoworkers);
+
                     } else {
                         Log.d(TAG, "onComplete: error getting documents" + task.getException());
                     }
                 });
     }
 
-    public MutableLiveData<List<User>> getCoworkersComing() {
-        return coworkersComing;
-    }
+    public void createUser() {
+        FirebaseUser user = GetCurrentUserFromAuthUseCase.invoke();
+        String urlPicture;
 
-    public MutableLiveData<List<User>> getAllCoworkers() {
-        return allCoworkers;
+        if (user != null) {
+
+            if (user.getPhotoUrl() != null) {
+                urlPicture = user.getPhotoUrl().toString();
+            } else urlPicture = null;
+
+            String username = user.getDisplayName();
+            String uid = user.getUid();
+            String email = user.getEmail();
+
+            Task<DocumentSnapshot> userData = getUserData();
+            userData.addOnSuccessListener(documentSnapshot -> {
+
+                User userToCreate = new User(uid, username, urlPicture, email);
+
+                if (documentSnapshot.contains(RESTAURANT_ID_FIELD_NAME)) {
+                    userToCreate.setRestaurantChoiceId((String) documentSnapshot.get(RESTAURANT_ID_FIELD_NAME));
+                    userToCreate.setRestaurantChoiceName((String) documentSnapshot.get(RESTAURANT_NAME_FIELD_NAME));
+                    userToCreate.setRestaurantChoiceAddress((String) documentSnapshot.get(RESTAURANT_ADDRESS_FIELD_NAME));
+                }
+
+                getUsersCollection().document(uid).set(userToCreate);
+                userUid.setValue(user.getUid());
+
+            });
+        }
     }
 
     public String getCurrentUserUID() {
@@ -105,28 +123,24 @@ public class UserRepository {
         return null;
     }
 
-    public void createUser() {
-        FirebaseUser user = GetCurrentUserFromAuthUseCase.invoke();
-        if (user != null) {
-            String urlPicture;
-            if (user.getPhotoUrl() != null) {
-                urlPicture = user.getPhotoUrl().toString();
-            } else urlPicture = null;
-            String username = user.getDisplayName();
-            String uid = user.getUid();
-            String email = user.getEmail();
-            User userToCreate = new User(uid, username, urlPicture, email);
-            Task<DocumentSnapshot> userData = getUserData();
-            userData.addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.contains(RESTAURANT_CHOICE_ID)) {
-                    userToCreate.setRestaurantChoiceId((String) documentSnapshot.get(RESTAURANT_CHOICE_ID));
-                }
-                this.getUsersCollection().document(uid).set(userToCreate);
-                userUid.setValue(user.getUid());
-            });
-        }
+    public Task<DocumentSnapshot> getUserWithUid(String uid){
+        return getUsersCollection().document(uid).get();
+    }
 
+    public MutableLiveData<String> getUserUid(){
+        return userUid;
+    }
 
+    public MutableLiveData<List<User>> getCoworkersComing() {
+        return coworkersComing;
+    }
+
+    public MutableLiveData<List<User>> getAllCoworkers() {
+        return allCoworkers;
+    }
+
+    private CollectionReference getUsersCollection() {
+        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
     }
 
     public Boolean isCurrentUserLogged() {
@@ -137,7 +151,7 @@ public class UserRepository {
         currentUser.setRestaurantChoiceId(placeId);
         currentUser.setRestaurantChoiceName(restaurantName);
         currentUser.setRestaurantChoiceAddress(restaurantAddress);
-        this.getUsersCollection().document(currentUser.getUid()).set(currentUser);
+        getUsersCollection().document(currentUser.getUid()).set(currentUser);
     }
 
     public void addFavouritePlace(String placeId, User currentUser) {
@@ -154,11 +168,5 @@ public class UserRepository {
         getUsersCollection().document(uid).delete();
     }
 
-    public Task<DocumentSnapshot> getUserWithUid(String uid){
-        return getUsersCollection().document(uid).get();
-    }
 
-    public MutableLiveData<String> getUserUid(){
-        return userUid;
-    }
 }

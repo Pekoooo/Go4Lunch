@@ -158,7 +158,6 @@ public class DetailedActivity extends AppCompatActivity {
             setChecked();
         }
 
-        // SETS FAVOURITE ICON
         if (isFavourite()) {
             setLiked();
         } else {

@@ -19,10 +19,7 @@ public class User {
     private String restaurantChoiceAddress;
 
 
-
-    //Empty constructor for DB.
     public User(){
-
     }
 
     public User(String uid, String userName, @Nullable String avatarURL, String email) {

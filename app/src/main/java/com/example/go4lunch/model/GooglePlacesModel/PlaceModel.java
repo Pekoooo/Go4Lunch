@@ -39,7 +39,6 @@ public class PlaceModel implements Parcelable {
     @Expose
     private String placeId;
 
-
     @SerializedName("rating")
     @Expose
     private Float rating;
@@ -71,9 +70,11 @@ public class PlaceModel implements Parcelable {
     @SerializedName("website")
     @Expose
     private String website;
+
     @SerializedName("formatted_address")
     @Expose
     private String address;
+
     @SerializedName("international_phone_number")
     @Expose
     private String phone;
@@ -205,7 +206,6 @@ public class PlaceModel implements Parcelable {
         this.obfuscatedType = obfuscatedType;
     }
 
-
     public List<Photo> getPhotos() {
         return photos;
     }
@@ -221,7 +221,6 @@ public class PlaceModel implements Parcelable {
     public void setPlaceId(String placeId) {
         this.placeId = placeId;
     }
-
 
     public Float getRating() {
         return rating;

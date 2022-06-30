@@ -44,28 +44,18 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
     public RestaurantResultHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.restaurant_list_row, parent, false);
-
-
-
-
-
         return new RestaurantResultHolder(itemView, onItemClickListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RestaurantResultHolder holder, int position) {
 
-
-
         Restaurant currentRestaurant = place.get(position);
         GetNumberOfParticipantsUseCase useCase = new GetNumberOfParticipantsUseCase(
                 currentRestaurant.getPlaceId()
         );
-
         int participants = useCase.invoke();
-
         String distanceToDisplay = Math.round(currentRestaurant.getDistance()) + " m";
-
 
         String placePhotoApiCall;
         if(currentRestaurant.getPhotoReference() == null){
@@ -90,7 +80,10 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
             }
 
         RequestOptions requestOptions = new RequestOptions();
-        requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
+        requestOptions = requestOptions.transforms(
+                new CenterCrop(),
+                new RoundedCorners(16));
+
         Glide.with(holder.restaurantImage.getContext())
                 .load(placePhotoApiCall)
                 .apply(requestOptions)
@@ -114,8 +107,8 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         private final TextView openOrClosed;
         private final TextView restaurantDistance;
         private final TextView coworkersGoing;
-        private final RatingBar restaurantStars;
         private final ImageView restaurantImage;
+        private final RatingBar restaurantStars;
 
         OnItemClickListener onItemClickListener;
 
@@ -135,7 +128,6 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
 
         @Override
         public void onClick(View v) {
-            Log.d(TAG, "onClick: is called");
             onItemClickListener.onItemClick(getAdapterPosition());
         }
     }

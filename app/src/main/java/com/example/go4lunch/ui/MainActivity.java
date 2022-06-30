@@ -70,22 +70,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 123;
     private static final String CHANNEL_ID = "notification";
-    static User currentUser = new User();
-    private WorkManager workManager;
-    private final Clock clock = Clock.systemDefaultZone();
-    private MainViewModel viewModel;
     private static final String TAG = "MyMainActivity";
     private static final String TAG_WORK_MANAGER = "MyWorkManager";
-    private ActivityMainBinding binding;
+    private static User currentUser = new User();
+
     private final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+    private final Clock clock = Clock.systemDefaultZone();
+    private final String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+    private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
+            new FirebaseAuthUIActivityResultContract(),
+            MainActivity.this::onSignInResult);
+
+    private WorkManager workManager;
+    private MainViewModel viewModel;
+    private ActivityMainBinding binding;
     private TextView drawerUserName;
     private TextView drawerUserEmail;
     private ImageView drawerUserPicture;
     private NavController navController;
-    private final String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
-    private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
-            new FirebaseAuthUIActivityResultContract(),
-            this::onSignInResult);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,27 +95,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
         workManager = WorkManager.getInstance(this);
 
+        setContentView(binding.getRoot());
         checkForPerms();
         bindViewHeader();
         initUi();
         createNotificationChannel();
         setNotificationWorker();
-
-
-        // CHECK FOR LOGIN
-        if (!viewModel.isCurrentUserLogged()) {
-            startSignInActivity(signInLauncher);
-        } else {
-            getCurrentUserData();
-        }
+        getCurrentUserData();
     }
 
     private void createNotificationChannel() {
-        Log.d(TAG_WORK_MANAGER, "createNotificationChannel: is called");
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.channel);
             String description = getString(R.string.channel_description);
@@ -127,33 +120,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setNotificationWorker() {
-        Log.d(TAG_WORK_MANAGER, "setNotificationWorker: is called");
         LocalDateTime currentDate = LocalDateTime.now(clock);
-        LocalDateTime thisNoon = currentDate.with(LocalTime.of(15, 50));
+        LocalDateTime thisNoon = currentDate.with(LocalTime.of(12, 0));
 
         if (currentDate.isAfter(thisNoon)) {
             thisNoon = thisNoon.plusDays(1);
         }
-        
+
         long timeLeft = ChronoUnit
                 .MILLIS
                 .between(currentDate, thisNoon);
-        
-        Log.d(TAG_WORK_MANAGER, "setNotificationWorker: " + timeLeft);
 
         Constraints constraints = new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build();
-
         PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(
                 WorkerSendNotification.class,
                 1,
                 TimeUnit.DAYS)
-                .addTag("TEST")
+                .addTag("MyTag")
                 .setConstraints(constraints)
-                .setInitialDelay(1, TimeUnit.SECONDS)
+                .setInitialDelay(timeLeft, TimeUnit.MILLISECONDS)
                 .build();
-        
+
         workManager.enqueueUniquePeriodicWork(
-                "TEST",
+                "SendNotification",
                 ExistingPeriodicWorkPolicy.REPLACE,
                 workRequest
         );
@@ -164,7 +153,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void bindViewHeader() {
         View parentView = binding.navView.getHeaderView(0);
-
         drawerUserName = parentView.findViewById(R.id.drawer_profile_name);
         drawerUserEmail = parentView.findViewById(R.id.drawer_profile_email);
         drawerUserPicture = parentView.findViewById(R.id.drawer_profile_picture);
@@ -178,7 +166,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(binding.toolbar);
         binding.navView.setNavigationItemSelectedListener(this);
 
-        //Toggle the icon to open and close the drawer menu
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, binding.drawerLayout, binding.toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -216,18 +203,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-        Log.d(TAG, "onPermissionsGranted: is called");
         getDeviceLocation();
     }
 
     @Override
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-            Log.d(TAG, "onPermissionsDenied: showing dialog");
             new AppSettingsDialog.Builder(this).build().show();
 
         } else {
-            Log.d(TAG, "onPermissionsDenied: permission denied for the first time");
             EasyPermissions.requestPermissions(this, getString(R.string.rationale),
                     LOCATION_PERMISSION_REQUEST_CODE, this.perms);
         }
@@ -235,7 +219,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.d(TAG, "onRequestPermissionsResult: are you even called ?");
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
@@ -246,40 +229,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (requestCode == AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE) {
             checkForPerms();
         }
-
         super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
-        Log.d(TAG, "onSignInResult: is called");
 
         IdpResponse response = result.getIdpResponse();
         if (result.getResultCode() == Activity.RESULT_OK) {
-            Log.d(TAG, "onSignInResult: result ok");
 
-            //Create auth user in Firestore db
             viewModel.createUser();
             Toast.makeText(this, "Signed in successfully !", Toast.LENGTH_SHORT).show();
 
-            //Get user info from db and update UI
             viewModel.getUserUid().observe(this, this::getUserDataWithID);
 
-
-        } else {
-            if (response == null)
+        } else if (response == null) {
                 startSignInActivity(signInLauncher);
         }
     }
 
     private void startSignInActivity(ActivityResultLauncher<Intent> signInLauncher) {
-        // Choose authentication providers
+
         List<AuthUI.IdpConfig> providers =
                 Arrays.asList(
                         new AuthUI.IdpConfig.GoogleBuilder().build(),
                         new AuthUI.IdpConfig.FacebookBuilder().build(),
                         new AuthUI.IdpConfig.TwitterBuilder().build());
 
-        // Launch the activity
+
         Intent signInIntent = AuthUI.getInstance()
                 .createSignInIntentBuilder()
                 .setTheme(R.style.LoginTheme)
@@ -291,47 +267,46 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void getUserDataWithID(String uid) {
-        Log.d(TAG, "getUserDataWithID: is called");
-
         viewModel.getUserWithUid(uid).addOnCompleteListener(task -> {
+
             currentUser = task.getResult().toObject(User.class);
-
-           if(currentUser != null){
-               updateDrawerUi(currentUser);
-           }
+            updateDrawerUi(currentUser);
         });
-
     }
 
     private void getCurrentUserData() {
-        Log.d(TAG, "getCurrentUserData: is called");
-        GetCurrentUserFromDBUseCase.invoke().addOnSuccessListener(user -> {
-            drawerUserName = MainActivity.this.findViewById(R.id.drawer_profile_name);
-            drawerUserEmail = MainActivity.this.findViewById(R.id.drawer_profile_email);
-            drawerUserPicture = MainActivity.this.findViewById(R.id.drawer_profile_picture);
 
-            currentUser = user;
+        if (!viewModel.isCurrentUserLogged()) {
+            startSignInActivity(signInLauncher);
+        } else {
+            GetCurrentUserFromDBUseCase.invoke().addOnSuccessListener(user -> {
 
-            if (user != null) {
-                MainActivity.this.updateDrawerUi(user);
-            }
-        });
+                drawerUserName = MainActivity.this.findViewById(R.id.drawer_profile_name);
+                drawerUserEmail = MainActivity.this.findViewById(R.id.drawer_profile_email);
+                drawerUserPicture = MainActivity.this.findViewById(R.id.drawer_profile_picture);
+                currentUser = user;
+
+                updateDrawerUi(user);
+
+            });
+        }
     }
 
     public void updateDrawerUi(User user) {
-        Log.d(TAG, "updateDrawerUi: is called");
-        drawerUserName.setText(user.getUserName());
-        if (user.getEmail() != null) {
-            drawerUserEmail.setText(user.getEmail());
-        } else {
-            drawerUserEmail.setText(R.string.no_email);
-        }
+        if(user != null){
+            drawerUserName.setText(user.getUserName());
+            if (user.getEmail() != null) {
+                drawerUserEmail.setText(user.getEmail());
+            } else {
+                drawerUserEmail.setText(R.string.no_email);
+            }
 
-        if (user.getAvatarURL() != null) {
-            Glide.with(drawerUserPicture.getContext())
-                    .load(user.getAvatarURL())
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(drawerUserPicture);
+            if (user.getAvatarURL() != null) {
+                Glide.with(drawerUserPicture.getContext())
+                        .load(user.getAvatarURL())
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(drawerUserPicture);
+            }
         }
     }
 

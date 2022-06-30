@@ -43,8 +43,8 @@ public class RestaurantRepository {
     }
 
     public void searchRestaurants(Location currentLocation) {
-        location.setValue(currentLocation);
         String latlng = getLatLngToString(currentLocation);
+        location.setValue(currentLocation);
         googlePlacesService.searchRestaurants(latlng, DEFAULT_TYPE_SEARCH, DEFAULT_RADIUS_SEARCH, BuildConfig.API_KEY)
                 .enqueue(new Callback<NearbyResponseModel>() {
 
@@ -69,11 +69,11 @@ public class RestaurantRepository {
         return listOfRestaurants;
     }
 
-    private String getLatLngToString(Location location) {
-        return location.getLatitude() + "," + location.getLongitude();
-    }
-
     public MutableLiveData<Location> getLocation() {
         return location;
+    }
+
+    private String getLatLngToString(Location location) {
+        return location.getLatitude() + "," + location.getLongitude();
     }
 }

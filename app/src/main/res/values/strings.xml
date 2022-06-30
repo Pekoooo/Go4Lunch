@@ -45,9 +45,13 @@
     <string name="coma" translatable="false">,</string>
     <string name="and">and</string>
     <string name="todays_lunch">Today\'s lunch !</string>
+    <string name="no_choice_notification_message">You haven\'t told your coworkers yet where you were eating your lunch today!</string>
+    <string name="time_to_eat_at">Time to eat at</string>
     <string name="channel">notification channel</string>
     <string name="channel_description">channel for 12pm notification</string>
     <string name="delete_account">Delete Account</string>
+    <string name="with">with</string>
+    <string name="time_to_eat">Time to eat !</string>
 
 </resources>
 

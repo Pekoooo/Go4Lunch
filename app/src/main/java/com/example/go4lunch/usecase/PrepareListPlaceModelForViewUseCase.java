@@ -12,7 +12,7 @@ import java.util.List;
 
 public class PrepareListPlaceModelForViewUseCase {
 
-    UserRepository userRepository;
+    public UserRepository userRepository;
 
     public PrepareListPlaceModelForViewUseCase(){
         userRepository = UserRepository.getInstance();
@@ -60,12 +60,22 @@ public class PrepareListPlaceModelForViewUseCase {
 
             int participants = useCase.invoke();
 
-            Restaurant restaurantToCreate = new Restaurant(name, address, photoReference, placeId, isOpen, rating, distance, latLng, participants);
+            Restaurant restaurantToCreate =
+                    new Restaurant(
+                    name,
+                    address,
+                    photoReference,
+                    placeId,
+                    isOpen,
+                    rating,
+                    distance,
+                    latLng,
+                    participants);
+
             listToDisplay.add(restaurantToCreate);
         }
         return listToDisplay;
     }
-
 
     private static float getDistance(PlaceModel currentPlace, Location currentLocation) {
         float distance;

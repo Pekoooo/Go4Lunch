@@ -70,7 +70,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView: is called");
 
         binding = FragmentMapBinding.inflate(inflater, container, false);
         setHasOptionsMenu(true);
@@ -102,7 +101,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setButtons();
         viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModelRestaurant.class);
         viewModel.fetchCoworkers();
         viewModel.getAllCoworkers().observe(requireActivity(), users ->
@@ -118,9 +116,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             List<Restaurant> restaurantWithFavourite = viewModel.setRestaurantWithFavourite(allUsers, restaurantList);
             setRestaurantMarker(restaurantWithFavourite);
         });
+        setFAB();
     }
 
-    private void setButtons() {
+    private void setFAB() {
         binding.gpsCenterOnUser.setOnClickListener(v -> {
             if (currentLocation != null) {
                 moveCamera(new LatLng(
@@ -128,20 +127,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                 currentLocation.getLongitude())
                 );
             }
-
         });
     }
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        Log.d(TAG, "onMapReady: map is ready");
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(),
+        if (ActivityCompat.checkSelfPermission(requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                &&
+                ActivityCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+
         gMap = googleMap;
-        googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+        gMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
         gMap.setMyLocationEnabled(true);
         gMap.getUiSettings().setMyLocationButtonEnabled(false);
 
@@ -164,7 +164,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void moveCamera(LatLng latLng) {
-        Log.d(TAG, "moveCamera: is called");
         gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, MapFragment.DEFAULT_ZOOM));
     }
 
@@ -172,15 +171,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         if (gMap != null) {
             gMap.clear();
             for (int i = 0; i < restaurants.size(); i++) {
-
                 Restaurant currentRestaurant = restaurants.get(i);
+
                 if (currentRestaurant.isFavourite()) {
                     gMap.addMarker(new MarkerOptions()
                             .position(currentRestaurant.getLatLng())
                             .title(currentRestaurant.getName())
                             .icon(BitmapFromVectorUtil.BitmapFromVector(getContext(), R.drawable.ic_restaurant_corowker_going)));
                 } else {
-
                     gMap.addMarker(new MarkerOptions()
                             .position(currentRestaurant.getLatLng())
                             .title(currentRestaurant.getName())
@@ -195,15 +193,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE && data != null) {
+
             if (resultCode == RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(data);
-                Log.d(TAG, "onActivityResult: " + place.getId());
-
                 openDetailedActivity(place.getId());
-
-            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-                Status status = Autocomplete.getStatusFromIntent(data);
-                Toast.makeText(requireContext(), status.getStatusMessage(), Toast.LENGTH_SHORT).show();
             }
             return;
         }
@@ -215,5 +208,4 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         intent.putExtra("placeDetails", placeId);
         startActivity(intent);
     }
-
 }

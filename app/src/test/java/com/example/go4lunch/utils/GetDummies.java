@@ -29,6 +29,15 @@ public class GetDummies {
         return dummyUserList;
     }
 
+    public static List<Restaurant> getDummyRestaurantList() {
+        List<Restaurant> dummyRestaurants = new ArrayList<>();
+        dummyRestaurants.add(new Restaurant("name", "address", "photoRef","placeId", false, 1, "phoneNumber", "Website"));
+        dummyRestaurants.add(new Restaurant("name2", "address2", "photoRef2","1234", false, 2, "phoneNumber2", "Website2"));
+        dummyRestaurants.add(new Restaurant("name3", "address3", "photoRef3","123", false, 3, "phoneNumber3", "Website3"));
+
+        return dummyRestaurants;
+    }
+
 
     public static Restaurant getDummyRestaurant() {
         return new Restaurant(

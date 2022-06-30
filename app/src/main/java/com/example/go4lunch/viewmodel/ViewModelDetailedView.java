@@ -42,16 +42,11 @@ public class ViewModelDetailedView extends AndroidViewModel {
         return placeDetailRepository.getPlaceDetails();
     }
 
-    public void updateUserRestaurantChoice(String placeId, String restaurantName, User currentUser, String restaurantAddress) {
-        userRepository.updateUserRestaurantChoice(placeId, restaurantName, currentUser, restaurantAddress);
-    }
-
     public MutableLiveData<List<User>> getCoworkers() {
         return userRepository.getCoworkersComing();
     }
 
     public void fetchCoworkersComing(String placeId) {
-        Log.d(TAG, "fetchCoworkersComing: is called");
         userRepository.fetchCoworkersComing(placeId);
     }
 
@@ -61,5 +56,9 @@ public class ViewModelDetailedView extends AndroidViewModel {
 
     public void removeFavouritePlace(String placeId, User currentUser) {
         userRepository.removeFavouritePlace(placeId, currentUser);
+    }
+
+    public void updateUserRestaurantChoice(String placeId, String restaurantName, User currentUser, String restaurantAddress) {
+        userRepository.updateUserRestaurantChoice(placeId, restaurantName, currentUser, restaurantAddress);
     }
 }

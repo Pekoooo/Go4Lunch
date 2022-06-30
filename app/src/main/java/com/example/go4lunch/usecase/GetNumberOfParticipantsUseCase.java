@@ -7,8 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GetNumberOfParticipantsUseCase {
-    String restaurantId;
-    UserRepository userRepository;
+
+    public String restaurantId;
+    public UserRepository userRepository;
 
     public GetNumberOfParticipantsUseCase(String restaurantId){
         this.restaurantId = restaurantId;

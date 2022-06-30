@@ -28,4 +28,8 @@
     <string name="delete_account">Supprimer le compte</string>
     <string name="menu">Menu</string>
     <string name="no_choice_made">n\'a pas encore fait de choix</string>
+    <string name="no_choice_notification_message">Vous n\'avez pas encore dit a vos collègues ou vous alliez manger aujourd\'hui!</string>
+    <string name="time_to_eat_at">"Il est l'heure de manger a "</string>
+    <string name="with">avec</string>
+    <string name="time_to_eat">Il est l\'heure de manger !</string>
 </resources>

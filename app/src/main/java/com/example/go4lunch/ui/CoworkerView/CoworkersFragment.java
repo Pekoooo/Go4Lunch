@@ -28,10 +28,8 @@ public class CoworkersFragment extends Fragment {
 
     @Override
     public void onAttach(@NonNull Context context) {
-        Log.d(TAG, "onAttach: is called");
         super.onAttach(context);
         viewModel = new ViewModelProvider(this).get(ViewModelCoworkerList.class);
-
     }
 
     @Override
@@ -50,16 +48,14 @@ public class CoworkersFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         viewModel.getAllCoworkers().observe(getViewLifecycleOwner(), this::setRecyclerView);
     }
 
     private void setRecyclerView(List<User> users) {
-        binding.coworkerRecyclerview.setHasFixedSize(true);
-        binding.coworkerRecyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
         CoworkersListViewAdapter adapter = new CoworkersListViewAdapter(users);
         binding.coworkerRecyclerview.setAdapter(adapter);
-
+        binding.coworkerRecyclerview.setHasFixedSize(true);
+        binding.coworkerRecyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
 
         MaterialDividerItemDecoration materialDividerItemDecoration = new MaterialDividerItemDecoration(requireContext(), MaterialDividerItemDecoration.VERTICAL);
         materialDividerItemDecoration.setDividerInsetStart(265);

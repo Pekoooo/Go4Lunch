@@ -40,7 +40,7 @@ public class PlaceDetailRepository {
                     public void onResponse(@NonNull Call<PlaceDetailResponseModel> call, @NonNull Response<PlaceDetailResponseModel> response) {
                         if (response.body() != null) {
                            Restaurant restaurant = PreparePlaceModelForDetailViewUseCase.invoke(response.body().getResult());
-                            placeDetails.setValue(restaurant);
+                           placeDetails.setValue(restaurant);
                         }
                     }
 

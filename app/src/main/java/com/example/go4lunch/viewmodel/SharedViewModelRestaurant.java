@@ -26,7 +26,6 @@ public class SharedViewModelRestaurant extends AndroidViewModel {
 
         mRestaurantRepository = RestaurantRepository.getInstance();
         userRepository = UserRepository.getInstance();
-
     }
 
     @VisibleForTesting
