@@ -1,4 +1,4 @@
-<img src=""
+<img src="https://i.imgur.com/FvlBVwb.png"
 alt="J" width="400"/>
 
 # Go4Lunch
@@ -41,7 +41,7 @@ everyday at 12 that will contain the restaurant you choose, where it is located 
  - MVVM with clean architecture → Repository / Usecase / viewModel
  - Architecture components → LiveData / WorkManager
  
- #Libraries 
+#Libraries 
  
  - Firebase Auth
  - Firebase Firestore
