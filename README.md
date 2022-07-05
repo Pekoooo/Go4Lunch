@@ -14,7 +14,7 @@ everyday at 12 that will contain the restaurant you choose, where it is located 
 - Authentification with Gmail / Facebook and Twitter via Firebase Authentification
 
 
-<img src="https://i.imgur.com/11KpQ5s.jpg" alt="J" width="200"/>
+<img src="https://i.imgur.com/11KpQ5s.jpg" alt="J" width="300"/>
 
 - Main Activity 
 
@@ -23,9 +23,9 @@ everyday at 12 that will contain the restaurant you choose, where it is located 
   - Coworker Fragment : displays a list of all users and where they are eating lunch
   
   <p float="left">
-  <img src="https://i.imgur.com/MzyYEh0.jpg" width="200" />
-  <img src="https://i.imgur.com/ojnkGgO.jpg" width="200" /> 
-  <img src="https://i.imgur.com/RpVN29f.jpg" width="200" />
+  <img src="https://i.imgur.com/MzyYEh0.jpg" width="300" />
+  <img src="https://i.imgur.com/ojnkGgO.jpg" width="300" /> 
+  <img src="https://i.imgur.com/RpVN29f.jpg" width="300" />
 </p>
 
 - Drawer 
@@ -33,16 +33,23 @@ everyday at 12 that will contain the restaurant you choose, where it is located 
   User can access a drawer menu with his personnal informations in the header and access to his lunch, parametres and log out from his account.
   
   <img src="https://i.imgur.com/2cuOBhP.jpg"
-  alt="J" width="200"/>
+  alt="J" width="300"/>
+  
+- Detailed activity
+  From this view, user can see if coworkers are going to eat at this restaurant, call it, visit the website, add it to his favourite and select this place for the day.
+- The notifications are managed with WorkManager and will notify the user at 12 everyday where he is eating today, where and with who (based on other users choice)
+
+<p float="left">
+  <img src="https://i.imgur.com/0vf9suA.jpg" width="300" />
+  <img src="https://i.imgur.com/qpTsjM2.jpg" width="300" /> 
+</p>
   
  
  # Architecture
- 
  - MVVM with clean architecture → Repository / Usecase / viewModel
  - Architecture components → LiveData / WorkManager
  
-#Libraries 
- 
+# Libraries 
  - Firebase Auth
  - Firebase Firestore
  - Facebook SDK
@@ -54,6 +61,12 @@ everyday at 12 that will contain the restaurant you choose, where it is located 
  - Glide 
  - MockWebServer
  - Mockito 
+ 
+ # Unit Testing
+  - ViewModel with Mockito
+  - Retrofit interface with WebMockServer
+  
+ 
  
   
   
