@@ -23,9 +23,9 @@ everyday at 12 that will contain the restaurant you choose, where it is located 
   - Coworker Fragment : displays a list of all users and where they are eating lunch
   
   <p float="left">
-  <img src="https://i.imgur.com/MzyYEh0.jpg" width="200" />
-  <img src="https://i.imgur.com/ojnkGgO.jpg" width="200" /> 
-  <img src="https://i.imgur.com/RpVN29f.jpg" width="200" />
+  <img src="https://i.imgur.com/MzyYEh0.jpg" width="250" />
+  <img src="https://i.imgur.com/ojnkGgO.jpg" width="250" /> 
+  <img src="https://i.imgur.com/RpVN29f.jpg" width="250" />
 </p>
 
 - Drawer 
