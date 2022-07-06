@@ -5,7 +5,7 @@ alt="J" width="400"/>
 
 
 App that allows you to choose a restaurant from your surroundings and let all your coworkers know that you're eating there for lunch. The app helps to organize
-lunch break between coworkers. You'll be able to tell the others where you are going, and see where they are going too. You will also receive a reminder via notification
+lunch break between coworkers. You'll be able to tell the others where you are going and see where they are going too. You will also receive a reminder via notification
 everyday at 12 that will contain the restaurant you choose, where it is located and who is going with you.
 
 
